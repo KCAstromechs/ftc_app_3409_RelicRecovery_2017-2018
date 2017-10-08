@@ -23,6 +23,13 @@ public class Teleop extends OpMode {
     boolean red = true;
     boolean blue = true;
 
+    boolean lb = false;
+    boolean lbLast = false;
+    boolean rb = false;
+    boolean rbLast = false;
+    boolean a = false;
+    boolean aLast = false;
+
     @Override
     public void init() {
         motorRight=hardwareMap.dcMotor.get("right");
@@ -39,15 +46,51 @@ public class Teleop extends OpMode {
     @Override
     public void loop() {
 
-        float left = -gamepad1.left_stick_y;
-        float right = gamepad1.right_stick_y;
+        float left = gamepad1.left_stick_y;
+        float right = -gamepad1.right_stick_y;
         if (Math.abs(left)<0.25) left = 0;
         if (Math.abs(right)<0.25) right = 0;
 
         motorRight.setPower(right);
         motorLeft.setPower(left);
 
-        if(gamepad1.a){
+        if(lbLast) {
+            lb = false;
+            if (!gamepad1.left_bumper) {
+                lbLast = false;
+            }
+        } else {
+            if(gamepad1.left_bumper){
+                lb = true;
+                lbLast = true;
+            }
+        }
+
+        if(rbLast) {
+            rb = false;
+            if (!gamepad1.right_bumper) {
+                rbLast = false;
+            }
+        } else {
+            if(gamepad1.right_bumper){
+                rb = true;
+                rbLast = true;
+            }
+        }
+
+        if(aLast) {
+            a = false;
+            if (!gamepad1.a) {
+                aLast = false;
+            }
+        } else {
+            if(gamepad1.a){
+                a = true;
+                aLast = true;
+            }
+        }
+
+        if(a){
             if(up){
                 servoFlipper.setPosition(0.03);
                 up = false;
@@ -57,20 +100,12 @@ public class Teleop extends OpMode {
             }
         }
 
-        if (gamepad1.right_bumper){
-            if (red){
-                red = false;
-            } else {
-                red = true;
-            }
+        if (rb){
+            red = !red;
         }
 
-        if (gamepad1.left_bumper){
-            if (blue){
-                blue = false;
-            } else {
-                blue = true;
-            }
+        if (lb){
+            blue = !blue;
         }
 
         if (blue) {
@@ -85,7 +120,7 @@ public class Teleop extends OpMode {
             servoRedRight.setPosition(0.6);
         } else {
             servoRedLeft.setPosition(0.4);
-            servoRedRight.setPosition(0.5   );
+            servoRedRight.setPosition(0.5);
         }
     }
 
