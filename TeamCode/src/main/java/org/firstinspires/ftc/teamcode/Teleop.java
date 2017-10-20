@@ -19,9 +19,14 @@ public class Teleop extends OpMode {
     Servo servoBlueLeft;
     Servo servoBlueRight;
 
-    private static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-            0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+    //private static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
+    //        0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
 
+    private static final double[] scaleArray = {0.0, 0.19, 0.3, 0.38, 0.44, 0.49, 0.53, 0.57,
+            0.6, 0.63, 0.65, 0.68, 0.70, 0.72, 0.74, 0.76, 1.00};
+    //growth can be expressed by y=(3ln(x+1))/11
+    //did somebody say
+    //kevin is a math nerd!?
 
     boolean up = false;
     boolean red = true;
@@ -98,16 +103,6 @@ public class Teleop extends OpMode {
             }
         }
 
-        if(a){
-            if(up){
-                servoFlipper.setPosition(0.0);
-                up = false;
-            } else {
-                servoFlipper.setPosition(1.0);
-                up = true;
-            }
-        }
-
         if (rb){
             red = !red;
         }
@@ -116,12 +111,16 @@ public class Teleop extends OpMode {
             blue = !blue;
         }
 
+        if (a){
+            up = !up;
+        }
+
         if (blue) {
-            servoBlueLeft.setPosition(0.2);
-            servoBlueRight.setPosition(0.53);
+            servoBlueLeft.setPosition(0.1);
+            servoBlueRight.setPosition(0.63);
         } else {
-            servoBlueLeft.setPosition(0.3);
-            servoBlueRight.setPosition(0.43);
+            servoBlueLeft.setPosition(0.45);
+            servoBlueRight.setPosition(0.27);
         }
         if (red) {
             servoRedLeft.setPosition(0.28);
@@ -130,11 +129,16 @@ public class Teleop extends OpMode {
             servoRedLeft.setPosition(0.4);
             servoRedRight.setPosition(0.5);
         }
+        if(up){
+            servoFlipper.setPosition(0.0);
+        } else {
+            servoFlipper.setPosition(1.0);
+        }
 
-        if(gamepad1.dpad_up) {
+        if(gamepad1.dpad_up || gamepad2.dpad_up) {
             motorUp.setPower(-0.5);
         }
-        else if (gamepad1.dpad_down) {
+        else if (gamepad1.dpad_down || gamepad2.dpad_down) {
             motorUp.setPower(0.5);
         }
         else {
