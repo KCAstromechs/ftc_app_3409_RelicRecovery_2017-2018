@@ -1,19 +1,44 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import static android.content.Context.SENSOR_SERVICE;
 
 /**
  * Created by N2Class1 on 10/19/2017.
  */
-
-public class RustyAutonomousTesting extends LinearOpMode {
+@Autonomous(name="Rusty Auto RR", group="test")
+public class RustyAutonomousTesting extends LinearOpMode implements SensorEventListener{
 
     DcMotor motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight, encoderMotor;
 
     static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 0.5;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
+
+    //variables for gyro operation
+    float zero;
+    float rawGyro;
+    boolean hasBeenZeroed = false;
+    public float zRotation;
+
+    //arrays for gyro operation
+    float[] rotationMatrix = new float[9];
+    float[] orientation = new float[3];
+
+    //more required vars for gyro operation
+    private SensorManager mSensorManager;
+    private Sensor mRotationVectorSensor;
 
     //encoder ticks per one inch
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -27,12 +52,38 @@ public class RustyAutonomousTesting extends LinearOpMode {
         motorBackRight = hardwareMap.dcMotor.get("BackRight");
         encoderMotor = hardwareMap.dcMotor.get("FrontLeft");
 
+        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
+
+
+        //Accessing gyro and accelerometer from Android
+        mSensorManager = (SensorManager) hardwareMap.appContext.getSystemService(SENSOR_SERVICE);
+        mRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+        mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
+
         waitForStart();
 
+        hasBeenZeroed = false;
+
+        //TODO Figure out how to deregister the gyro on opmode stop
+        //TODO Figure out long ADB APK install times
+
         beeline(24, 0.75);
+
+        //TODO conduct testing one ramp (gyro and distance)
+
+        while(!Thread.interrupted()) {
+            telemetry.addLine("zRotation: " + zRotation);
+            telemetry.addLine("encoderMotor: " + encoderMotor.getCurrentPosition());
+            telemetry.update();
+        }
+
+
     }
 
     void beeline(double inches, double power) {
+        double leftPower = 0, rightPower = 0;
+
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -47,9 +98,20 @@ public class RustyAutonomousTesting extends LinearOpMode {
 
         int target = (int) (inches * COUNTS_PER_INCH); //translates the number of inches to be driven into encoder ticks
 
-        double leftPower = 1, rightPower = 1;
+        if(inches < 0) {
+            leftPower = -power;
+            rightPower = -power;
+        }
+        else {
+            leftPower = power;
+            rightPower = power;
+        }
 
-        while(Math.abs(encoderMotor.getCurrentPosition()) < Math.abs(target) && !Thread.interrupted()) {
+        while(Math.abs(encoderMotor.getCurrentPosition()) <= Math.abs(target) && !Thread.interrupted()) {
+
+            telemetry.addLine("encoder value: " + encoderMotor.getCurrentPosition());
+            telemetry.addLine("target: " + target);
+            telemetry.update();
 
             motorFrontLeft.setPower(leftPower);
             motorBackLeft.setPower(leftPower);
@@ -65,13 +127,50 @@ public class RustyAutonomousTesting extends LinearOpMode {
         motorFrontRight.setPower(0);
         motorBackRight.setPower(0);
 
-        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+    //TODO Add turn method
+
+    public float normalize360(float val) {
+        while (val > 360 || val < 0) {
+
+            if (val > 360) {
+                val -= 360;
+            }
+
+            if (val < 0) {
+                val += 360;
+            }
+        }
+        return val;
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        SensorManager.getRotationMatrixFromVector(rotationMatrix, sensorEvent.values);
+        SensorManager.getOrientation(rotationMatrix, orientation);
+
+        rawGyro = (float) Math.toDegrees(orientation[0]);
+
+        //If the zero hasn't been zeroed do the zero
+        if (!hasBeenZeroed) {
+            hasBeenZeroed = true;
+            zero = rawGyro;
+        }
+        //Normalize zRotation to be used
+        zRotation = normalize360(rawGyro - zero);
+        System.out.println("SSS zRotation" + zRotation);
+//        Dbg("zRotation in callback: " , zRotation, false);
+    }
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    public void deconstruct(){
+        mSensorManager.unregisterListener(this);
+    }
+
 }
