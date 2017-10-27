@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 import static android.content.Context.SENSOR_SERVICE;
 
@@ -25,6 +26,8 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
     static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 0.5;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
+    static final double P_BEELINE_COEFF = 0.04;           // Larger is more responsive, but also less stable
+    static final double TURN_MINIMUM_SPEED = 0.2;
 
     //variables for gyro operation
     float zero;
@@ -68,7 +71,7 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         //TODO Figure out how to deregister the gyro on opmode stop
         //TODO Figure out long ADB APK install times
 
-        beeline(24, 0.75);
+        beeline(24, 0);
 
         //TODO conduct testing one ramp (gyro and distance)
 
@@ -81,8 +84,10 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
     }
 
-    void beeline(double inches, double power) {
-        double leftPower = 0, rightPower = 0;
+    void beeline(double inches, int heading) {
+        double power = 1;
+        double leftPower = 0, rightPower = 0, error, correction;
+        int target = (int) (inches * COUNTS_PER_INCH); //translates the number of inches to be driven into encoder ticks
 
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -95,8 +100,6 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
         telemetry.addLine("initial encoder value: " + encoderMotor.getCurrentPosition());
         telemetry.update();
-
-        int target = (int) (inches * COUNTS_PER_INCH); //translates the number of inches to be driven into encoder ticks
 
         if(inches < 0) {
             leftPower = -power;
@@ -113,6 +116,13 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
             telemetry.addLine("target: " + target);
             telemetry.update();
 
+            error = heading - zRotation;
+            correction = Range.clip(error * P_BEELINE_COEFF, -1, 1);
+            leftPower = power + correction;
+            rightPower = power - correction;
+            leftPower = Range.clip(leftPower, -1, 1);
+            rightPower = Range.clip(rightPower, -1, 1);
+
             motorFrontLeft.setPower(leftPower);
             motorBackLeft.setPower(leftPower);
             motorFrontRight.setPower(rightPower);
@@ -127,9 +137,91 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         motorFrontRight.setPower(0);
         motorBackRight.setPower(0);
 
+        //Reset the motors for future use, just in case
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
     }
 
-    //TODO Add turn method
+    public void turn (float turnHeading, double power) throws InterruptedException {
+        turnHeading = normalize360(turnHeading);
+
+        int wrapFix = 0;
+        float shiftedTurnHeading = turnHeading;
+        double motorSpeed = power;
+
+        float ccwise = zRotation - turnHeading;
+        float cwise = turnHeading - zRotation;
+
+        ccwise = normalize360(ccwise);
+        cwise = normalize360(cwise);
+
+        int error = 1;
+        if (turnHeading - error < 0 || turnHeading + error > 360) {
+            wrapFix = 180;
+            shiftedTurnHeading = normalize360(turnHeading + wrapFix);
+        }
+
+        if (Math.abs(ccwise) >= Math.abs(cwise)) {
+
+            while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
+                    Math.abs(ccwise) >= Math.abs(cwise) &&
+                    !Thread.interrupted()) {
+
+                Thread.sleep(10);
+
+                motorSpeed = cwise;
+                if (motorSpeed > power)
+                    motorSpeed = power;
+                if (motorSpeed < TURN_MINIMUM_SPEED)
+                    motorSpeed = TURN_MINIMUM_SPEED;
+
+                motorFrontLeft.setPower(motorSpeed);
+                motorBackLeft.setPower(motorSpeed);
+                motorFrontRight.setPower(motorSpeed);
+                motorBackRight.setPower(motorSpeed);
+
+                ccwise = zRotation - turnHeading;
+                cwise = turnHeading - zRotation;
+            }
+        }
+        else if (Math.abs(cwise) > Math.abs(ccwise)) {
+
+            while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
+                    Math.abs(cwise) >= Math.abs(ccwise) &&
+                    !Thread.interrupted()) {
+
+                Thread.sleep(10);
+
+                motorSpeed = ccwise;
+                if (motorSpeed > power)
+                    motorSpeed = power;
+                if (motorSpeed < TURN_MINIMUM_SPEED)
+                    motorSpeed = TURN_MINIMUM_SPEED;
+
+                motorFrontLeft.setPower(motorSpeed);
+                motorBackLeft.setPower(motorSpeed);
+                motorFrontRight.setPower(motorSpeed);
+                motorBackRight.setPower(motorSpeed);
+
+                ccwise = zRotation - turnHeading;
+                cwise = turnHeading - zRotation;
+            }
+
+        }
+
+        motorFrontLeft.setPower(0);
+        motorBackLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackRight.setPower(0);
+
+    }
 
     public float normalize360(float val) {
         while (val > 360 || val < 0) {
