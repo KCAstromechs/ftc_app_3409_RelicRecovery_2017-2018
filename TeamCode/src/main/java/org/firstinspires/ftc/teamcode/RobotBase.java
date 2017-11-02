@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class RobotBase {
 
 
-    DcMotor motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight;
+    DcMotor motorRight, motorLeft;
     OpMode callingOpMode;
     HardwareMap hardwareMap;
     DcMotor encoderMotor;
@@ -34,14 +34,11 @@ public class RobotBase {
         callingOpMode = _callingOpMode;
         hardwareMap = _hardwareMap;
 
-        motorFrontLeft = hardwareMap.dcMotor.get("FrontLeft");
-        motorFrontRight = hardwareMap.dcMotor.get("FrontRight");
-        motorBackLeft = hardwareMap.dcMotor.get("BackLeft");
-        motorBackRight = hardwareMap.dcMotor.get("BackRight");
-        encoderMotor = motorFrontLeft;
+        motorLeft = hardwareMap.dcMotor.get("left");
+        motorRight = hardwareMap.dcMotor.get("right");
+        encoderMotor = motorLeft;
 
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorRight.setDirection(DcMotor.Direction.REVERSE);
     }
 
     void updateDriveMotors(double left, double right, boolean slowDrive) {
@@ -57,26 +54,22 @@ public class RobotBase {
         left = scaleInput(left);
         right = scaleInput(right);
 
-        motorFrontLeft.setPower(left);
-        motorBackLeft.setPower(left);
-        motorBackRight.setPower(right);
-        motorFrontRight.setPower(right);
+        motorLeft.setPower(left);
+        motorRight.setPower(right);
     }
 
     void beeline(double inches, double power) {
-        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         callingOpMode.telemetry.addLine("SSS initial encoder value: " + encoderMotor.getCurrentPosition());
         callingOpMode.telemetry.update();
 
         int target = (int) (inches * COUNTS_PER_INCH); //translates the number of inches to be driven into encoder ticks
+
+        //TODO: finish this method fam
 
     }
 
