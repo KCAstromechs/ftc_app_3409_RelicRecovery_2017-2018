@@ -70,21 +70,21 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
         //TODO Figure out how to deregister the gyro on opmode stop
         //TODO Figure out long ADB APK install times
+       /** telemetry.addLine("encoderMotor: " + encoderMotor.getCurrentPosition());
+        telemetry.addLine("zRotation: " + zRotation);
+        telemetry.update(); **/
 
-        beeline(24, 0);
+        turn(270, .75);
+        //beeline(24, 0);
 
-        //TODO conduct testing one ramp (gyro and distance)
-
-        while(!Thread.interrupted()) {
+       /** while(!Thread.interrupted()) {
             telemetry.addLine("zRotation: " + zRotation);
             telemetry.addLine("encoderMotor: " + encoderMotor.getCurrentPosition());
             telemetry.update();
-        }
-
-
+        } **/
     }
 
-    void beeline(double inches, int heading) {
+    void beelineCorrecting(double inches, int heading) {
         double power = 1;
         double leftPower = 0, rightPower = 0, error, correction;
         int target = (int) (inches * COUNTS_PER_INCH); //translates the number of inches to be driven into encoder ticks
@@ -98,8 +98,8 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        telemetry.addLine("initial encoder value: " + encoderMotor.getCurrentPosition());
-        telemetry.update();
+        //telemetry.addLine("initial encoder value: " + encoderMotor.getCurrentPosition());
+        //telemetry.update();
 
         if(inches < 0) {
             leftPower = -power;
@@ -112,9 +112,9 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
         while(Math.abs(encoderMotor.getCurrentPosition()) <= Math.abs(target) && !Thread.interrupted()) {
 
-            telemetry.addLine("encoder value: " + encoderMotor.getCurrentPosition());
-            telemetry.addLine("target: " + target);
-            telemetry.update();
+            //telemetry.addLine("encoder value: " + encoderMotor.getCurrentPosition());
+            //telemetry.addLine("target: " + target);
+            //telemetry.update();
 
             error = heading - zRotation;
             correction = Range.clip(error * P_BEELINE_COEFF, -1, 1);
@@ -149,6 +149,51 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
     }
 
+    void beeline(double inches, int heading) {
+        double power = 1;
+        int target = (int) (inches * COUNTS_PER_INCH); //translates the number of inches to be driven into encoder ticks
+
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+        if(inches < 0) {
+            power = -power;
+        }
+
+        while(Math.abs(encoderMotor.getCurrentPosition()) <= Math.abs(target) && !Thread.interrupted()) {
+
+            motorFrontLeft.setPower(power);
+            motorBackLeft.setPower(power);
+            motorFrontRight.setPower(power);
+            motorBackRight.setPower(power);
+
+            Thread.yield();
+        }
+
+        motorFrontLeft.setPower(0);
+        motorBackLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackRight.setPower(0);
+
+        //Reset the motors for future use, just in case
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+    }
+
     public void turn (float turnHeading, double power) throws InterruptedException {
         turnHeading = normalize360(turnHeading);
 
@@ -162,7 +207,7 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         ccwise = normalize360(ccwise);
         cwise = normalize360(cwise);
 
-        int error = 1;
+        int error = 4;
         if (turnHeading - error < 0 || turnHeading + error > 360) {
             wrapFix = 180;
             shiftedTurnHeading = normalize360(turnHeading + wrapFix);
@@ -176,7 +221,6 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
                 Thread.sleep(10);
 
-                motorSpeed = cwise;
                 if (motorSpeed > power)
                     motorSpeed = power;
                 if (motorSpeed < TURN_MINIMUM_SPEED)
@@ -184,8 +228,8 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
                 motorFrontLeft.setPower(motorSpeed);
                 motorBackLeft.setPower(motorSpeed);
-                motorFrontRight.setPower(motorSpeed);
-                motorBackRight.setPower(motorSpeed);
+                motorFrontRight.setPower(-motorSpeed);
+                motorBackRight.setPower(-motorSpeed);
 
                 ccwise = zRotation - turnHeading;
                 cwise = turnHeading - zRotation;
@@ -199,14 +243,13 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
                 Thread.sleep(10);
 
-                motorSpeed = ccwise;
                 if (motorSpeed > power)
                     motorSpeed = power;
                 if (motorSpeed < TURN_MINIMUM_SPEED)
                     motorSpeed = TURN_MINIMUM_SPEED;
 
-                motorFrontLeft.setPower(motorSpeed);
-                motorBackLeft.setPower(motorSpeed);
+                motorFrontLeft.setPower(-motorSpeed);
+                motorBackLeft.setPower(-motorSpeed);
                 motorFrontRight.setPower(motorSpeed);
                 motorBackRight.setPower(motorSpeed);
 

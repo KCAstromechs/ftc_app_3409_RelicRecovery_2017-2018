@@ -13,12 +13,12 @@ public class Teleop extends OpMode {
     DcMotor motorLeft;
     DcMotor motorUp;
     DcMotor motorDown;
-    Servo servoFlipper;
     Servo servoRedLeft;
     //Servo servoRedRight;
     Servo servoBlueLeft;
     Servo servoBlueRight;
     Servo servoForkLift;
+    Servo servoWinch;
 
     //private static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
     //        0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
@@ -36,14 +36,24 @@ public class Teleop extends OpMode {
 
     boolean lb = false;
     boolean lbLast = false;
-    //boolean rb = false;
-    //boolean rbLast = false;
+    boolean rb = false;
+    boolean rbLast = false;
     boolean a = false;
     boolean aLast = false;
+    boolean b = false;
+    boolean bLast = false;
+    boolean x = false;
+    boolean xLast = false;
+    boolean y = false;
+    boolean yLast = false;
     boolean dl = false;
     boolean dlLast = false;
     boolean dr = false;
     boolean drLast = false;
+
+    //To explsin the variable naming system, the button name (a, lb, et c.) is the variable for if it should register an input.
+    //The button name Last (aLast, rbLast, et c.) is for the toggle logic;
+    //it is for if the button registered an input on the last time through the loop
 
     @Override
     public void init() {
@@ -51,12 +61,13 @@ public class Teleop extends OpMode {
         motorLeft=hardwareMap.dcMotor.get("left");
         motorUp=hardwareMap.dcMotor.get("up");
         motorDown=hardwareMap.dcMotor.get("down");
-        servoFlipper=hardwareMap.servo.get("flipper");
+        servoWinch = hardwareMap.servo.get("winch");
         servoRedLeft=hardwareMap.servo.get("redLeft");
         //servoRedRight=hardwareMap.servo.get("redRight");
         servoBlueLeft=hardwareMap.servo.get("blueLeft");
         servoBlueRight=hardwareMap.servo.get("blueRight");
         servoForkLift=hardwareMap.servo.get("forkLift");
+        servoWinch.setPosition(0.65);
     }
 
     @Override
@@ -89,27 +100,63 @@ public class Teleop extends OpMode {
             }
         }
 
-        /*if(rbLast) {
+        if(rbLast) {
             rb = false;
-            if (!gamepad1.right_bumper) {
+            if (!gamepad2.right_bumper) {
                 rbLast = false;
             }
         } else {
-            if(gamepad1.right_bumper){
+            if(gamepad2.right_bumper){
                 rb = true;
                 rbLast = true;
             }
-        }*/
+        }
 
         if(aLast) {
             a = false;
-            if (!gamepad1.a) {
+            if (!gamepad2.a) {
                 aLast = false;
             }
         } else {
-            if(gamepad1.a){
+            if(gamepad2.a){
                 a = true;
                 aLast = true;
+            }
+        }
+
+        if(bLast) {
+            b = false;
+            if (!gamepad2.b) {
+                bLast = false;
+            }
+        } else {
+            if(gamepad2.b){
+                b = true;
+                bLast = true;
+            }
+        }
+
+        if(xLast) {
+            x = false;
+            if (!gamepad2.x) {
+                xLast = false;
+            }
+        } else {
+            if(gamepad2.x){
+                x = true;
+                xLast = true;
+            }
+        }
+
+        if(yLast) {
+            y = false;
+            if (!gamepad2.y) {
+                yLast = false;
+            }
+        } else {
+            if(gamepad2.y){
+                y = true;
+                yLast = true;
             }
         }
 
@@ -146,7 +193,19 @@ public class Teleop extends OpMode {
         }
 
         if (a){
-            up = !up;
+            servoWinch.setPosition(0.63);
+        }
+        if (b){
+            servoWinch.setPosition(0.53);
+        }
+        if (x){
+            servoWinch.setPosition(0.29);
+        }
+        if (y){
+            servoWinch.setPosition(0.40);
+        }
+        if (rb){
+            servoWinch.setPosition(0.7);
         }
 
         if (dr){
