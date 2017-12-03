@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Environment;
 
+import com.google.blocks.ftcrobotcontroller.util.SoundsUtil;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,6 +16,22 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
+import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
+import com.vuforia.Vuforia;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static android.content.Context.SENSOR_SERVICE;
 
@@ -20,15 +40,25 @@ import static android.content.Context.SENSOR_SERVICE;
  */
 @Autonomous(name="Rusty Auto RR", group="test")
 public class RustyAutonomousTesting extends LinearOpMode implements SensorEventListener{
+    VuforiaLocalizer vuforia;
+
 
     DcMotor motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight, encoderMotor;
 
     static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 0.5;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
-    static final double P_BEELINE_COEFF = 0.04;           // Larger is more responsive, but also less stable
+    static final double P_BEELINE_COEFF = 0.01;           // Larger is more responsive, but also less stable
     static final double TURN_MINIMUM_SPEED = 0.2;
 
+    static final int JEWEL_UNKNOWN = 0;
+    static final int JEWEL_BLUE_RED = 1;
+    static final int JEWEL_RED_BLUE = 2;
+
+    static final int PICTO_UNKNOWN = 0;
+    static final int PICTO_LEFT = 1;
+    static final int PICTO_CENTER = 2;
+    static final int PICTO_right= 3;
     //variables for gyro operation
     float zero;
     float rawGyro;
@@ -58,6 +88,8 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
+        //If Vuforia has not yet started, we're screwed. Start it up now in the name of hope
+        if(vuforia == null) initVuforia();
 
         //Accessing gyro and accelerometer from Android
         mSensorManager = (SensorManager) hardwareMap.appContext.getSystemService(SENSOR_SERVICE);
@@ -74,8 +106,18 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         telemetry.addLine("zRotation: " + zRotation);
         telemetry.update(); **/
 
-        turn(270, .75);
-        //beeline(24, 0);
+        int jewelResult = jewelVision();
+
+        if (jewelResult == JEWEL_BLUE_RED) {
+            turn(352, .25);
+        }
+        else if (jewelResult == JEWEL_RED_BLUE) {
+            turn(8, .25);
+        }
+
+        sleep(1000);
+
+        driveStraight(30, 0);
 
        /** while(!Thread.interrupted()) {
             telemetry.addLine("zRotation: " + zRotation);
@@ -84,7 +126,7 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         } **/
     }
 
-    void beelineCorrecting(double inches, int heading) {
+    void driveStraight(double inches, int heading) {
         double power = 1;
         double leftPower = 0, rightPower = 0, error, correction;
         int target = (int) (inches * COUNTS_PER_INCH); //translates the number of inches to be driven into encoder ticks
@@ -191,7 +233,194 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
+    public void pictographVision() {
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTrackables.activate();
+
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+        relicTrackables.deactivate();
+
+        //TODO: that???
+        //if(vuMark = )
+    }
+
+    public int jewelVision() throws InterruptedException {
+        int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
+        int xRedAvg = 0;                            //Average X position of red pixels to help find red side location
+        int xBlueAvg = 0;                           //Average X position of blue pixels to help find blue side location
+        int totalBlue = 1;                          //Total number of blue pixels to help find blue side location
+        int totalRed = 1;                           //Total number of red pixels to help find red side location
+        int xRedSum = 0;                            //Added-up X pos of red pixels to find red side location
+        int xBlueSum = 0;                           //Added-up X pos of blue pix to find blue side location
+        int idx = 0;                                //Ensures we get correct image type from Vuforia
+        float thisS;
+        float minRGB, maxRGB;
+        int returnVal = 0;
+
+        System.out.println("timestamp before getting image");
+        //Take an image from Vuforia in the correct format
+        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+        for (int i = 0; i < frame.getNumImages(); i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                idx = i;
+                break;
+            }
+        }
+
+        //Create an instance of the image and then of the pixels
+        Image image = frame.getImage(idx);
+        ByteBuffer px = image.getPixels();
+
+        //Origin: top right of image (current guess)
+
+        //Loop through every pixel column
+        int h = image.getHeight();
+        int w = image.getWidth();
+
+
+        System.out.println("timestamp before processing loop");
+
+        for (int i = 0; i < h; i++) {
+
+//            System.out.println("loop #" + i);
+            //If the bot stops you should really stop.
+            if(Thread.interrupted()) break;
+
+            //Loop through a certain number of rows to cover a certain area of the image
+            for (int j = 0; j < w; j++) { //925, 935
+
+                //Take the RGB vals of current pix
+                thisR = px.get(i * w * 3 + (j * 3)) & 0xFF;
+                thisG = px.get(i * w * 3 + (j * 3) + 1) & 0xFF;
+                thisB = px.get(i * w * 3 + (j * 3) + 2) & 0xFF;
+
+
+                //Convert the RGB vals into S
+                minRGB = Math.min(thisR, Math.min(thisB, thisG)) + 1;
+                maxRGB = Math.max(thisR, Math.max(thisB, thisG)) + 1;
+                thisS = (maxRGB - minRGB) / maxRGB;
+                boolean isBlue;
+                //System.out.println("Saturation: " + thisS);
+
+                //We now have the colors (one byte each) for any pixel, (j, i) so we can add to the totals
+                if (thisS >= 0.95) {
+  //                  System.out.println("Jewel pixel found");
+                    isBlue = thisB - thisR > 0;
+                    if (isBlue) {
+                        totalBlue++;
+                        xBlueSum += i;
+                    } else if (!isBlue) {
+                        totalRed++;
+                        xRedSum += i;
+                    }
+                }
+            }
+        }
+
+        telemetry.addLine("timestamp after processing loop, before save pic");
+        System.out.println("timestamp after processing loop, before save pic");
+
+        boolean bSavePicture = false;
+        if (bSavePicture) {
+            // Reset the pixel pointer to the start of the image
+            px = image.getPixels();
+            // Create a buffer to hold 32-bit image dataa and fill it
+            int bmpData[] = new int[w * h];
+            int pixel;
+            int index = 0;
+            int x,y;
+            for (y = 0; y < h; y++) {
+                for (x = 0; x < w; x++) {
+                    thisR = px.get() & 0xFF;
+                    thisG = px.get() & 0xFF;
+                    thisB = px.get() & 0xFF;
+                    bmpData[index] = Color.rgb(thisR, thisG, thisB);
+                    index++;
+                }
+            }
+            // Now create a bitmap object from the buffer
+            Bitmap bmp = Bitmap.createBitmap(bmpData, w, h, Bitmap.Config.ARGB_8888);
+            // And save the bitmap to the file system
+            // NOTE:  AndroidManifest.xml needs <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            try {
+                //to convert Date to String, use format method of SimpleDateFormat class.
+                DateFormat dateFormat = new SimpleDateFormat("mm-dd__hh-mm-ss");
+                String strDate = dateFormat.format(new Date());
+                String path = Environment.getExternalStorageDirectory() + "/Snapshot__" + strDate + ".png";
+                System.out.println("Snapshot filename" + path);
+                File file = new File(path);
+                file.createNewFile();
+                FileOutputStream fos = new FileOutputStream(file);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                System.out.println("Snapshot exception" + e.getStackTrace().toString());
+            }
+        }
+
+        System.out.println("timestamp after save pic");
+        //Find the averages
+        xRedAvg = xRedSum / totalRed;
+        xBlueAvg = xBlueSum / totalBlue;
+
+/*        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+            if (vuMark == RelicRecoveryVuMark.LEFT) {
+                System.out.println("RESULT Pictograph Left Column");
+                telemetry.addLine("RESULT Pictograph Left Column");
+                returnString += "L ";
+            }
+            if (vuMark == RelicRecoveryVuMark.CENTER) {
+                System.out.println("RESULT Pictograph Center Column");
+                telemetry.addLine("RESULT Pictograph Center Column");
+                returnString += "C ";
+            }
+            if (vuMark == RelicRecoveryVuMark.RIGHT) {
+                System.out.println("RESULT Pictograph Right Column");
+                telemetry.addLine("RESULT Pictograph Right Column");
+                returnString += "R ";
+            }
+        }
+        else {
+            System.out.println("RESULT Pictograph not found");
+            telemetry.addLine("RESULT Pictograph not found");
+            returnString += "N ";
+        }
+*/      if(xBlueAvg > xRedAvg) {
+            System.out.println("result BLUE_RED");
+            telemetry.addLine("BLUE_RED");
+            returnVal = JEWEL_BLUE_RED;
+        }
+        else if(xBlueAvg < xRedAvg) {
+            System.out.println("result RED_BLUE");
+            telemetry.addLine("RED_BLUE");
+            returnVal = JEWEL_RED_BLUE;
+        }
+        else {
+            System.out.println("result nothing");
+            telemetry.addLine("No result");
+        }
+
+        System.out.println("Red xAvg " + xRedAvg);
+        System.out.println("Blue xAvg " + xBlueAvg);
+        telemetry.update();
+        return returnVal;
+
+    }
+
+    public void initVuforia() {
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = "Ac8xsqH/////AAAAGcG2OeE2NECwo7mM5f9KX1RKmDT79NqkIHc/ATgW2+loN9Fr8fkfb6jE42RZmiRYeei1FvM2M3kUPdl53j" +
+                "+oeuhahXi7ApkbRv9cef0kbffj+4EkWKWCgQM39sRegfX+os6PjJh1fwGdxxijW0CYXnp2Rd1vkTjIs/cW2/7TFTtuJTkc17l" +
+                "+FNJAeqLEfRnwrQ0FtxvBjO8yQGcLrpeKJKX/+sN+1kJ/cvO345RYfPSoG4Pi+wo/va1wmhuZ/WCLelUeww8w8u0douStuqcuz" +
+                "ufrsWmQThsHqQDfDh0oGKZGIckh3jwCV2ABkP0lT6ICBDm4wOZ8REoyiY2kjsDnnFG6cT803cfzuVuPJl+uGTEf";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
+        vuforia.setFrameQueueCapacity(1);
     }
 
     public void turn (float turnHeading, double power) throws InterruptedException {
@@ -294,7 +523,7 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         }
         //Normalize zRotation to be used
         zRotation = normalize360(rawGyro - zero);
-        System.out.println("SSS zRotation" + zRotation);
+        //System.out.println("SSS zRotation" + zRotation);
 //        Dbg("zRotation in callback: " , zRotation, false);
     }
 
