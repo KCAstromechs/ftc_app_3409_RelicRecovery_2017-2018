@@ -44,11 +44,11 @@ public class RobotBaseM1ttens implements SensorEventListener {
     private static final double DRIVE_GEAR_REDUCTION = 1.0;     // This is < 1.0 if geared UP
     private static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
 
-    protected static final double driveSpeed = 0.8;
-    protected static final double turnSpeed = 0.5;
+    protected static final double driveSpeed = 0.5;
+    protected static final double turnSpeed = 0.2;
 
 
-    private static final double P_DRIVE_COEFF = 0.02;           // Larger is more responsive, but also less stable
+    private static final double P_DRIVE_COEFF = 0.01;           // Larger is more responsive, but also less stable
     static final double P_TURN_COEFF = 0.018;          // Larger is more responsive, but also less stable
 
 
@@ -80,7 +80,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
+        motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
         encoderMotor = motorLeft;
 
@@ -167,12 +167,15 @@ public class RobotBaseM1ttens implements SensorEventListener {
     /**
      * Tells the robot to turn to a specified heading according to the GAME-ROTATION-VECTOR
      * @param turnHeading the desired heading for the bot. 0-360 range
-     * @param power the desired power for the turn. -1-1 range
+     * @param power the desired power for the turn. 0-1 range
      * @throws InterruptedException can be interrupted
      */
     protected void turn(float turnHeading, double power) throws InterruptedException {
         int wrapFix = 0;                                        //Can be used to modify values and make math around 0 easier
         float shiftedTurnHeading = turnHeading;                 //Can be used in conjunction with wrapFix to make math around 0 easier
+
+        power = Math.abs(power);                                //makes sure the power is positive
+        if (power>1) power = 1;                                 //makes sure the power isn't >1
 
         //If heading is not on correct scale, put it between 0-360
         turnHeading = normalize360(turnHeading);
@@ -193,28 +196,32 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
         //If it would be longer to take the ccwise path, we go *** CLOCKWISE ***
         if(Math.abs(cclockwise) >= Math.abs(clockwise)){
+
+            motorLeft.setPower(power);
+            motorRight.setPower(-power);
+
+
             //While we're not within our error, and we haven't overshot, and the bot is running
             while(Math.abs(normalize360(zRotation + wrapFix)- shiftedTurnHeading) > error &&
                     Math.abs(cclockwise) >= Math.abs(clockwise) && !Thread.interrupted()) {
 
-                //Wait a hot decisecond
+                //Chill a hot decisecond
                 Thread.sleep(10);
-
-                motorLeft.setPower(power);
-                motorRight.setPower(-power);
             }
         }
         //If it would take longer to take the cwise path, we go *** COUNTERCLOCKWISE ***
         else if(Math.abs(clockwise) > Math.abs(cclockwise)) {
+
+            motorLeft.setPower(-power);
+            motorRight.setPower(power);
+
+
             //While we're not within our error, and we haven't overshot, and the bot is running
             while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
                     Math.abs(clockwise) > Math.abs(cclockwise) && !Thread.interrupted()) {
 
-                //Stop a hot decisecond
+                //Hold up a hot decisecond
                 Thread.sleep(10);
-
-                motorLeft.setPower(-power);
-                motorRight.setPower(power);
             }
         }
 
