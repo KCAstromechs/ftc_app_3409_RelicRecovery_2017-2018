@@ -48,17 +48,16 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
     static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 0.5;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
-    static final double P_BEELINE_COEFF = 0.01;           // Larger is more responsive, but also less stable
+    static final double P_BEELINE_COEFF = 0.01;         // Larger is more responsive, but also less stable
     static final double TURN_MINIMUM_SPEED = 0.2;
 
     static final int JEWEL_UNKNOWN = 0;
     static final int JEWEL_BLUE_RED = 1;
     static final int JEWEL_RED_BLUE = 2;
 
-    static final int PICTO_UNKNOWN = 0;
-    static final int PICTO_LEFT = 1;
-    static final int PICTO_CENTER = 2;
-    static final int PICTO_right= 3;
+    static int jewelPosition;                           //holds the value of one of the above jewel positions for reference
+    static RelicRecoveryVuMark pictoPosition;           //holds one of the pictograph position for reference
+
     //variables for gyro operation
     float zero;
     float rawGyro;
@@ -79,6 +78,7 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //setup motors
         motorFrontLeft = hardwareMap.dcMotor.get("FrontLeft");
         motorFrontRight = hardwareMap.dcMotor.get("FrontRight");
         motorBackLeft = hardwareMap.dcMotor.get("BackLeft");
@@ -106,17 +106,44 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         telemetry.addLine("zRotation: " + zRotation);
         telemetry.update(); **/
 
-        int jewelResult = jewelVision();
+        Vision();   //decide what pictograph and jewels are
 
-        if (jewelResult == JEWEL_BLUE_RED) {
+        //print pictograph and jewel positions for our own reference
+        if(pictoPosition == RelicRecoveryVuMark.LEFT)
+            telemetry.addLine("left");
+        else if(pictoPosition == RelicRecoveryVuMark.CENTER)
+            telemetry.addLine("center");
+        else if(pictoPosition == RelicRecoveryVuMark.RIGHT)
+            telemetry.addLine("right");
+        else
+            telemetry.addLine("unknown");
+
+        if(jewelPosition == JEWEL_BLUE_RED) {
+            System.out.println("result BLUE_RED");
+            telemetry.addLine("BLUE_RED");
+        }
+        else if(jewelPosition == JEWEL_RED_BLUE) {
+            System.out.println("result RED_BLUE");
+            telemetry.addLine("RED_BLUE");
+        }
+        else {
+            System.out.println("result nothing");
+            telemetry.addLine("UNKNOWN");
+        }
+
+        telemetry.update();
+
+        //move to knock off the correct pixel depending on position
+        if (jewelPosition == JEWEL_BLUE_RED) {
             turn(352, .25);
         }
-        else if (jewelResult == JEWEL_RED_BLUE) {
+        else if (jewelPosition == JEWEL_RED_BLUE) {
             turn(8, .25);
         }
 
         sleep(1000);
 
+        //drive off of the ramp. The drive will correct for the previous turn.
         driveStraight(30, 0);
 
        /** while(!Thread.interrupted()) {
@@ -235,19 +262,8 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void pictographVision() {
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTrackables.activate();
 
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-        relicTrackables.deactivate();
-
-        //TODO: that???
-        //if(vuMark = )
-    }
-
-    public int jewelVision() throws InterruptedException {
+    public void Vision() throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
         int xRedAvg = 0;                            //Average X position of red pixels to help find red side location
         int xBlueAvg = 0;                           //Average X position of blue pixels to help find blue side location
@@ -259,6 +275,11 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         float thisS;
         float minRGB, maxRGB;
         int returnVal = 0;
+
+        //Set up the trackables for the pictographs so we can grab that information later
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTrackables.activate();
 
         System.out.println("timestamp before getting image");
         //Take an image from Vuforia in the correct format
@@ -323,6 +344,11 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         telemetry.addLine("timestamp after processing loop, before save pic");
         System.out.println("timestamp after processing loop, before save pic");
 
+        //now grab the pictograph information since it's had time to set up, and shut it down
+        pictoPosition = RelicRecoveryVuMark.from(relicTemplate);
+        relicTrackables.deactivate();
+
+        //save picture block
         boolean bSavePicture = false;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
@@ -367,47 +393,20 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         xRedAvg = xRedSum / totalRed;
         xBlueAvg = xBlueSum / totalBlue;
 
-/*        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            if (vuMark == RelicRecoveryVuMark.LEFT) {
-                System.out.println("RESULT Pictograph Left Column");
-                telemetry.addLine("RESULT Pictograph Left Column");
-                returnString += "L ";
-            }
-            if (vuMark == RelicRecoveryVuMark.CENTER) {
-                System.out.println("RESULT Pictograph Center Column");
-                telemetry.addLine("RESULT Pictograph Center Column");
-                returnString += "C ";
-            }
-            if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                System.out.println("RESULT Pictograph Right Column");
-                telemetry.addLine("RESULT Pictograph Right Column");
-                returnString += "R ";
-            }
-        }
-        else {
-            System.out.println("RESULT Pictograph not found");
-            telemetry.addLine("RESULT Pictograph not found");
-            returnString += "N ";
-        }
-*/      if(xBlueAvg > xRedAvg) {
-            System.out.println("result BLUE_RED");
-            telemetry.addLine("BLUE_RED");
-            returnVal = JEWEL_BLUE_RED;
+        //set jewel var based on results
+        if(xBlueAvg > xRedAvg) {
+            jewelPosition = JEWEL_BLUE_RED;
         }
         else if(xBlueAvg < xRedAvg) {
-            System.out.println("result RED_BLUE");
-            telemetry.addLine("RED_BLUE");
-            returnVal = JEWEL_RED_BLUE;
+            jewelPosition = JEWEL_RED_BLUE;
         }
         else {
-            System.out.println("result nothing");
-            telemetry.addLine("No result");
+            jewelPosition = JEWEL_UNKNOWN;
         }
 
         System.out.println("Red xAvg " + xRedAvg);
         System.out.println("Blue xAvg " + xBlueAvg);
         telemetry.update();
-        return returnVal;
 
     }
 
@@ -424,18 +423,20 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
     }
 
     public void turn (float turnHeading, double power) throws InterruptedException {
+        //first things first make sure that the heading we've put in is a real thing we can use
         turnHeading = normalize360(turnHeading);
 
-        int wrapFix = 0;
-        float shiftedTurnHeading = turnHeading;
-        double motorSpeed = power;
+        int wrapFix = 0;                                            //When we need to modify values close to 0 or 360 we use wrapFix to modify them
+        float shiftedTurnHeading = turnHeading;                     //We add wrapFix to the turnHeading to get this and carefully modify values close to 0 or 360
+        double motorSpeed = power;                                  //so we can modify power without changing the original
+        float ccwise = zRotation - turnHeading;                     //The amount in degrees that the robot would have to turn if it went counterclockwise
+        float cwise = turnHeading - zRotation;                      //The amnt. in degrees that th bot would have to turn if it went clockwise
 
-        float ccwise = zRotation - turnHeading;
-        float cwise = turnHeading - zRotation;
-
+        //make absolutely sure that the distances are acceptable for our use
         ccwise = normalize360(ccwise);
         cwise = normalize360(cwise);
 
+        //If the heading we want is too close to 0 or 360, modify it and make note that we did
         int error = 4;
         if (turnHeading - error < 0 || turnHeading + error > 360) {
             wrapFix = 180;
@@ -443,7 +444,7 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
         }
 
         if (Math.abs(ccwise) >= Math.abs(cwise)) {
-
+            //if clockwise is the shortest way to go, then keep turning as long as we are still fairly far from our target heading and clockwise remains the shortest way to go
             while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
                     Math.abs(ccwise) >= Math.abs(cwise) &&
                     !Thread.interrupted()) {
@@ -460,12 +461,13 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
                 motorFrontRight.setPower(-motorSpeed);
                 motorBackRight.setPower(-motorSpeed);
 
+                //continually re evaluate course based on where we are
                 ccwise = zRotation - turnHeading;
                 cwise = turnHeading - zRotation;
             }
         }
         else if (Math.abs(cwise) > Math.abs(ccwise)) {
-
+            //if counterclockwise is the shorter way to go, keep turning as long as it still is and we're not too close to our target
             while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
                     Math.abs(cwise) >= Math.abs(ccwise) &&
                     !Thread.interrupted()) {
@@ -482,6 +484,7 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
                 motorFrontRight.setPower(motorSpeed);
                 motorBackRight.setPower(motorSpeed);
 
+                //continually re-evaluate what the best course is based on current heading
                 ccwise = zRotation - turnHeading;
                 cwise = turnHeading - zRotation;
             }
@@ -495,6 +498,12 @@ public class RustyAutonomousTesting extends LinearOpMode implements SensorEventL
 
     }
 
+    /**
+     * Takes input of degrees and puts it on a 0 to 360 degree circle.
+     * We use this because input from the phone gyro comes in a -180 to 180 degree circle
+     * @param val should be any input that is meant to represent a certain number of degrees
+     * @return the corrected val
+     */
     public float normalize360(float val) {
         while (val > 360 || val < 0) {
 
