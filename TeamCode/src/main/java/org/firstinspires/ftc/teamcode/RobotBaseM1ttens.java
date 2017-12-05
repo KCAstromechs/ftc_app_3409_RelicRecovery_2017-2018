@@ -18,7 +18,10 @@ import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,6 +41,9 @@ public class RobotBaseM1ttens implements SensorEventListener {
     private OpMode callingOpMode;
 
     private VuforiaLocalizer vuforia;
+
+    protected static int jewelPosition;                           //holds the value of one of the above jewel positions for reference
+    protected static RelicRecoveryVuMark pictoPosition;           //holds one of the pictograph position for reference
 
     static final int JEWEL_UNKNOWN = 0;
     static final int JEWEL_BLUE_RED = 1;
@@ -124,7 +130,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         vuforia.setFrameQueueCapacity(1);
     }
 
-    protected void driveStraight(double inches, int heading) { driveStraight(inches, heading, driveSpeed); }
+    protected void driveStraight(double inches, int heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
 
     /**
      * Tells the robot to drive forward at a certain heading for a specified distance
@@ -132,7 +138,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
      * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
      * @param power amount of power given to motors, does not affect distance driven, absolute value from 0 to 1
      */
-    protected void driveStraight(double inches, int heading, double power) {
+    protected void driveStraight(double inches, int heading, double power) throws InterruptedException {
         int target = (int) (inches * COUNTS_PER_INCH);          //translates the number of inches to be driven into encoder ticks
         double error;                                           //The number of degrees between the true heading and desired heading
         double correction;                                      //Modifies power to account for error
@@ -194,6 +200,8 @@ public class RobotBaseM1ttens implements SensorEventListener {
         motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        Thread.sleep(500);
     }
 
     protected void turn(float turnHeading) throws InterruptedException { turn(turnHeading, turnSpeed);  }
@@ -261,10 +269,12 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
         motorRight.setPower(0);
         motorLeft.setPower(0);
+
+        Thread.sleep(500);
     }
 
 
-    public int jewelVision() throws InterruptedException {
+    protected void vision() throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
         int xRedAvg = 0;                            //Average X position of red pixels to help find red side location
         int xBlueAvg = 0;                           //Average X position of blue pixels to help find blue side location
@@ -275,7 +285,11 @@ public class RobotBaseM1ttens implements SensorEventListener {
         int idx = 0;                                //Ensures we get correct image type from Vuforia
         float thisS;
         float minRGB, maxRGB;
-        int returnVal = 0;
+
+        //Set up the trackables for the pictographs so we can grab that information later
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTrackables.activate();
 
         System.out.println("timestamp before getting image");
         //Take an image from Vuforia in the correct format
@@ -340,6 +354,11 @@ public class RobotBaseM1ttens implements SensorEventListener {
         callingOpMode.telemetry.addLine("timestamp after processing loop, before save pic");
         System.out.println("timestamp after processing loop, before save pic");
 
+        //now grab the pictograph information since it's had time to set up, and shut it down
+        pictoPosition = RelicRecoveryVuMark.from(relicTemplate);
+        relicTrackables.deactivate();
+
+        //save picture block
         boolean bSavePicture = false;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
@@ -384,47 +403,20 @@ public class RobotBaseM1ttens implements SensorEventListener {
         xRedAvg = xRedSum / totalRed;
         xBlueAvg = xBlueSum / totalBlue;
 
-/*        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            if (vuMark == RelicRecoveryVuMark.LEFT) {
-                System.out.println("RESULT Pictograph Left Column");
-                telemetry.addLine("RESULT Pictograph Left Column");
-                returnString += "L ";
-            }
-            if (vuMark == RelicRecoveryVuMark.CENTER) {
-                System.out.println("RESULT Pictograph Center Column");
-                telemetry.addLine("RESULT Pictograph Center Column");
-                returnString += "C ";
-            }
-            if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                System.out.println("RESULT Pictograph Right Column");
-                telemetry.addLine("RESULT Pictograph Right Column");
-                returnString += "R ";
-            }
-        }
-        else {
-            System.out.println("RESULT Pictograph not found");
-            telemetry.addLine("RESULT Pictograph not found");
-            returnString += "N ";
-        }
-*/      if(xBlueAvg > xRedAvg) {
-            System.out.println("result BLUE_RED");
-            callingOpMode.telemetry.addLine("BLUE_RED");
-            returnVal = JEWEL_BLUE_RED;
+        //set jewel var based on results
+        if(xBlueAvg > xRedAvg) {
+            jewelPosition = JEWEL_BLUE_RED;
         }
         else if(xBlueAvg < xRedAvg) {
-            System.out.println("result RED_BLUE");
-            callingOpMode.telemetry.addLine("RED_BLUE");
-            returnVal = JEWEL_RED_BLUE;
+            jewelPosition = JEWEL_RED_BLUE;
         }
         else {
-            System.out.println("result nothing");
-            callingOpMode.telemetry.addLine("No result");
+            jewelPosition = JEWEL_UNKNOWN;
         }
 
         System.out.println("Red xAvg " + xRedAvg);
         System.out.println("Blue xAvg " + xBlueAvg);
         callingOpMode.telemetry.update();
-        return returnVal;
 
     }
 

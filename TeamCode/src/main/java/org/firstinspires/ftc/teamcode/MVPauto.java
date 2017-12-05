@@ -17,17 +17,10 @@ public class MVPauto extends LinearOpMode {
 
         waitForStart();
 
-        int jewel = robotBase.jewelVision();
-        switch (jewel){
-            case 1:
-                telemetry.addData("jewels", "blue, red");
-                break;
-            case 2:
-                telemetry.addData("jewels", "red, blue");
-                break;
-            default:
-                telemetry.addData("jewels", "unknown");
-        }
+        robotBase.vision();
+
+        telemetry.addData("jewel", robotBase.jewelPosition);
+        telemetry.addData("picto", robotBase.pictoPosition);
         telemetry.update();
 
         robotBase.turn(270);
