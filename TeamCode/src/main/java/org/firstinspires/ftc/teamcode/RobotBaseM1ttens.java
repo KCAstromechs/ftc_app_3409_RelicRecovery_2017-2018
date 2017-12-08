@@ -359,7 +359,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         relicTrackables.deactivate();
 
         //save picture block
-        boolean bSavePicture = false;
+        boolean bSavePicture = true;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
             px = image.getPixels();
@@ -403,11 +403,23 @@ public class RobotBaseM1ttens implements SensorEventListener {
         xRedAvg = xRedSum / totalRed;
         xBlueAvg = xBlueSum / totalBlue;
 
+
+        /*THIS BLOCK OF CODE IS FOR WHEN TWO JEWELS ARE IN SIGHT*/
         //set jewel var based on results
-        if(xBlueAvg > xRedAvg) {
+        /*if(xBlueAvg > xRedAvg) {
             jewelPosition = JEWEL_BLUE_RED;
         }
         else if(xBlueAvg < xRedAvg) {
+            jewelPosition = JEWEL_RED_BLUE;
+        }
+        else {
+            jewelPosition = JEWEL_UNKNOWN;
+        }*/
+
+        if(totalBlue > totalRed) {
+            jewelPosition = JEWEL_BLUE_RED;
+        }
+        else if(totalRed > totalBlue) {
             jewelPosition = JEWEL_RED_BLUE;
         }
         else {
@@ -416,7 +428,9 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
         System.out.println("Red xAvg " + xRedAvg);
         System.out.println("Blue xAvg " + xBlueAvg);
-        callingOpMode.telemetry.update();
+        callingOpMode.telemetry.addData("totalBlue: ", totalBlue);
+        callingOpMode.telemetry.addData("totalRed: ", totalRed);
+        //callingOpMode.telemetry.update();
 
     }
 
