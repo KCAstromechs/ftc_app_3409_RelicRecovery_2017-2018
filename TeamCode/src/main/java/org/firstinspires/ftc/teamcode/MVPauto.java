@@ -29,8 +29,8 @@ public class MVPauto extends LinearOpMode {
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
-                squaresOverlay = (RelativeLayout) View.inflate(appUtil.getActivity(), R.layout.beacon_line_up_squares, null);
-                squaresOverlay.findViewById(R.id.blueSideBeacon).setVisibility(View.VISIBLE);
+                squaresOverlay = (RelativeLayout) View.inflate(appUtil.getActivity(), R.layout.jewel_lineup_square, null);
+                squaresOverlay.findViewById(R.id.left_jewel).setVisibility(View.VISIBLE);
                 squaresOverlay.findViewById(R.id.Origin).setVisibility(View.VISIBLE);
                 appUtil.getActivity().addContentView(squaresOverlay, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
@@ -48,7 +48,7 @@ public class MVPauto extends LinearOpMode {
             }
         });
 
-        robotBase.vision();
+        robotBase.vision(0, 150);
 
         telemetry.addData("jewel", robotBase.jewelPosition);
         telemetry.addData("picto", robotBase.pictoPosition);

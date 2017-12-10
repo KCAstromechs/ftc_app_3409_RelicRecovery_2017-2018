@@ -87,6 +87,9 @@ public class RobotBaseM1ttens implements SensorEventListener {
     protected static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
             0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
 
+    VuforiaTrackables relicTrackables;
+    VuforiaTrackable relicTemplate;
+
     protected void init (OpMode _callingOpMode, HardwareMap _hardwareMap) {
         hardwareMap = _hardwareMap;
         callingOpMode = _callingOpMode;
@@ -128,6 +131,10 @@ public class RobotBaseM1ttens implements SensorEventListener {
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
         vuforia.setFrameQueueCapacity(1);
+
+        //Set up the trackables for the pictographs so we can grab that information later
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = relicTrackables.get(0);
     }
 
     protected void driveStraight(double inches, int heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
@@ -274,7 +281,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
     }
 
 
-    protected void vision() throws InterruptedException {
+    protected void vision(int startXpx, int startYpx) throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
         int xRedAvg = 0;                            //Average X position of red pixels to help find red side location
         int xBlueAvg = 0;                           //Average X position of blue pixels to help find blue side location
@@ -286,10 +293,13 @@ public class RobotBaseM1ttens implements SensorEventListener {
         float thisS;
         float minRGB, maxRGB;
 
-        //Set up the trackables for the pictographs so we can grab that information later
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTrackables.activate();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("timestamp before getting image");
         //Take an image from Vuforia in the correct format
@@ -301,6 +311,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
             }
         }
 
+        /*
         //Create an instance of the image and then of the pixels
         Image image = frame.getImage(idx);
         ByteBuffer px = image.getPixels();
@@ -313,15 +324,14 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
 
         System.out.println("timestamp before processing loop");
-
-        for (int i = 0; i < h; i++) {
+        for (int i = startXpx; i < startXpx + 275; i++) {
 
 //            System.out.println("loop #" + i);
             //If the bot stops you should really stop.
             if(Thread.interrupted()) break;
 
             //Loop through a certain number of rows to cover a certain area of the image
-            for (int j = 0; j < w; j++) { //925, 935
+            for (int j = startYpx; j < startYpx + 275; j++) { //925, 935
 
                 //Take the RGB vals of current pix
                 thisR = px.get(i * w * 3 + (j * 3)) & 0xFF;
@@ -351,15 +361,16 @@ public class RobotBaseM1ttens implements SensorEventListener {
             }
         }
 
+
         callingOpMode.telemetry.addLine("timestamp after processing loop, before save pic");
         System.out.println("timestamp after processing loop, before save pic");
-
+*/
         //now grab the pictograph information since it's had time to set up, and shut it down
         pictoPosition = RelicRecoveryVuMark.from(relicTemplate);
         relicTrackables.deactivate();
-
+/*
         //save picture block
-        boolean bSavePicture = true;
+        boolean bSavePicture = false;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
             px = image.getPixels();
