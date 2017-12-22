@@ -133,7 +133,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         vuforia.setFrameQueueCapacity(1);
 
         //Set up the trackables for the pictographs so we can grab that information later
-        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("ftc_relic_inverted_device");
         relicTemplate = relicTrackables.get(0);
     }
 
@@ -311,7 +311,6 @@ public class RobotBaseM1ttens implements SensorEventListener {
             }
         }
 
-        /*
         //Create an instance of the image and then of the pixels
         Image image = frame.getImage(idx);
         ByteBuffer px = image.getPixels();
@@ -364,13 +363,13 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
         callingOpMode.telemetry.addLine("timestamp after processing loop, before save pic");
         System.out.println("timestamp after processing loop, before save pic");
-*/
+
         //now grab the pictograph information since it's had time to set up, and shut it down
         pictoPosition = RelicRecoveryVuMark.from(relicTemplate);
         relicTrackables.deactivate();
-/*
+
         //save picture block
-        boolean bSavePicture = false;
+        boolean bSavePicture = true;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
             px = image.getPixels();
