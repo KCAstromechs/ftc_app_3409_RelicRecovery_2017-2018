@@ -35,7 +35,7 @@ import static android.content.Context.SENSOR_SERVICE;
 public class RobotBaseM1ttens implements SensorEventListener {
 
     private DcMotor motorLeft, motorRight, motorLifter;
-    private Servo servoLeft, servoRight;
+    private Servo servoLeft, servoRight, servoJewel;
     private DcMotor encoderMotor;
     private HardwareMap hardwareMap;
     private OpMode callingOpMode;
@@ -100,6 +100,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         motorLifter=hardwareMap.dcMotor.get("up");
         servoLeft=hardwareMap.servo.get("leftServo");
         servoRight=hardwareMap.servo.get("rightServo");
+        servoJewel=hardwareMap.servo.get("jewelServo");
 
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -115,6 +116,10 @@ public class RobotBaseM1ttens implements SensorEventListener {
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
         encoderMotor = motorLeft;
+
+        servoLeft.setPosition(0.1);
+        servoRight.setPosition(0.63);
+        servoJewel.setPosition(0.72);
 
         //Accessing gyro and accelerometer from Android
         mSensorManager = (SensorManager) hardwareMap.appContext.getSystemService(SENSOR_SERVICE);
@@ -280,6 +285,22 @@ public class RobotBaseM1ttens implements SensorEventListener {
         motorLeft.setPower(0);
 
         Thread.sleep(500);
+    }
+
+    protected void grabberOpen(){
+        servoLeft.setPosition(0.1);
+        servoRight.setPosition(0.63);
+    }
+    protected void grabberClose(){
+        servoLeft.setPosition(0.45);
+        servoRight.setPosition(0.27);
+    }
+
+    protected void jewelDown(){
+        servoJewel.setPosition(0.1);
+    }
+    protected void jewelUp(){
+        servoJewel.setPosition(0.72);
     }
 
 
