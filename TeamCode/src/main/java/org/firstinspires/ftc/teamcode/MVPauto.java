@@ -26,7 +26,7 @@ public class MVPauto extends LinearOpMode {
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
 
-        appUtil.synchronousRunOnUiThread(new Runnable() {
+        /*appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
                 squaresOverlay = (RelativeLayout) View.inflate(appUtil.getActivity(), R.layout.jewel_lineup_square, null);
@@ -34,11 +34,11 @@ public class MVPauto extends LinearOpMode {
                 squaresOverlay.findViewById(R.id.Origin).setVisibility(View.VISIBLE);
                 appUtil.getActivity().addContentView(squaresOverlay, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
-        });
+        });*/
 
         waitForStart();
 
-        appUtil.synchronousRunOnUiThread(new Runnable() {
+        /*appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (squaresOverlay != null){
@@ -46,16 +46,35 @@ public class MVPauto extends LinearOpMode {
                 }
                 squaresOverlay = null;
             }
-        });
+        });*/
 
-        robotBase.vision(0, 150);
+        //robotBase.vision(0, 150);
 
-        telemetry.addData("jewel", robotBase.jewelPosition);
-        telemetry.addData("picto", robotBase.pictoPosition);
-        telemetry.update();
+        //telemetry.addData("jewel", robotBase.jewelPosition);
+        //telemetry.addData("picto", robotBase.pictoPosition);
+        //telemetry.update();
 
-        robotBase.turn(270);
-        robotBase.driveStraight(32, 270);
-        robotBase.turn(180);
+        robotBase.grabberClose();
+        sleep(1000);
+        robotBase.grabberOpen();
+        sleep(1000);
+        robotBase.jewelDown();
+        sleep(1000);
+        robotBase.jewelUp();
+        sleep(1000);
+
+        /*robotBase.turn(270);
+        switch (0) {
+            case 0:
+                robotBase.driveStraight(42, 270);
+                break;
+            case 1:
+                //33
+                break;
+            case 2:
+                //42
+                break;
+        }
+        robotBase.turn(180);*/
     }
 }
