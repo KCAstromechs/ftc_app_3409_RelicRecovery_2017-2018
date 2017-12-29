@@ -121,15 +121,14 @@ public class VuMarkID extends LinearOpMode {
          * but differ in their instance id information.
          * @see VuMarkInstanceId
          */
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("ftc_relic_inverted_device");
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
+
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
-        telemetry.addData(">", "Press Play to start");
-        telemetry.update();
-        waitForStart();
-
         relicTrackables.activate();
+
+        waitForStart();
 
         while (opModeIsActive()) {
 
@@ -140,7 +139,7 @@ public class VuMarkID extends LinearOpMode {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            telemetry.addData("VuMark", (((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getVuMarkInstanceId()).toString());
+            //telemetry.addData("VuMark", (((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getVuMarkInstanceId()).toString());
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
                 /* Found an instance of the template. In the actual game, you will probably

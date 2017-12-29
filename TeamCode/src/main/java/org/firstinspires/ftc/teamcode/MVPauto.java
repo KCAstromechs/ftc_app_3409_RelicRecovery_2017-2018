@@ -48,7 +48,7 @@ public class MVPauto extends LinearOpMode {
             }
         });
 
-        robotBase.vision(0, 150);
+        robotBase.vision(475, 480);
 
         telemetry.addData("jewel", robotBase.jewelPosition);
         telemetry.addData("picto", robotBase.pictoPosition);

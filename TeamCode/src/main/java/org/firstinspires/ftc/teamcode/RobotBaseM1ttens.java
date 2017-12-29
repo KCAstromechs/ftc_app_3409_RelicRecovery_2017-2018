@@ -52,6 +52,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
     //variables for gyro operation
     private float zero;
     private float rawGyro;
+    public int sensorDataCounter = 0;
 
     //arrays for gyro operation
     private float[] rotationMatrix = new float[9];
@@ -133,8 +134,9 @@ public class RobotBaseM1ttens implements SensorEventListener {
         vuforia.setFrameQueueCapacity(1);
 
         //Set up the trackables for the pictographs so we can grab that information later
-        relicTrackables = this.vuforia.loadTrackablesFromAsset("ftc_relic_inverted_device");
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         relicTemplate = relicTrackables.get(0);
+        relicTrackables.activate();
     }
 
     protected void driveStraight(double inches, int heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
@@ -293,15 +295,8 @@ public class RobotBaseM1ttens implements SensorEventListener {
         float thisS;
         float minRGB, maxRGB;
 
-        relicTrackables.activate();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         System.out.println("timestamp before getting image");
+        callingOpMode.telemetry.addData("timestamp ", "before getting image");
         //Take an image from Vuforia in the correct format
         VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
         for (int i = 0; i < frame.getNumImages(); i++) {
@@ -323,7 +318,8 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
 
         System.out.println("timestamp before processing loop");
-        for (int i = startXpx; i < startXpx + 275; i++) {
+        callingOpMode.telemetry.addData("timestamp ", "before getting image");
+        for (int i = startXpx; i < startXpx + 245; i++) {
 
 //            System.out.println("loop #" + i);
             //If the bot stops you should really stop.
@@ -361,15 +357,15 @@ public class RobotBaseM1ttens implements SensorEventListener {
         }
 
 
-        callingOpMode.telemetry.addLine("timestamp after processing loop, before save pic");
-        System.out.println("timestamp after processing loop, before save pic");
+        callingOpMode.telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
+        System.out.println("timestamp after processing loop, before save pic/grab picto");
 
         //now grab the pictograph information since it's had time to set up, and shut it down
         pictoPosition = RelicRecoveryVuMark.from(relicTemplate);
         relicTrackables.deactivate();
 
         //save picture block
-        boolean bSavePicture = true;
+        boolean bSavePicture = false;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
             px = image.getPixels();
@@ -409,6 +405,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         }
 
         System.out.println("timestamp after save pic");
+        callingOpMode.telemetry.addData("timestamp ", "after save pic");
         //Find the averages
         xRedAvg = xRedSum / totalRed;
         xBlueAvg = xBlueSum / totalBlue;
@@ -449,6 +446,8 @@ public class RobotBaseM1ttens implements SensorEventListener {
         SensorManager.getRotationMatrixFromVector(rotationMatrix, sensorEvent.values);
         SensorManager.getOrientation(rotationMatrix, orientation);
 
+        sensorDataCounter++;
+
         rawGyro = (float) Math.toDegrees(orientation[0]);
 
         //If the zero hasn't been zeroed do the zero
@@ -458,6 +457,11 @@ public class RobotBaseM1ttens implements SensorEventListener {
         }
         //Normalize zRotation to be used
         zRotation = normalize360(rawGyro - zero);
+
+        if(sensorDataCounter % 100 == 0) {
+            //callingOpMode.telemetry.addData("zRotation: ", zRotation);
+            //callingOpMode.telemetry.update();
+        }
     }
 
 
