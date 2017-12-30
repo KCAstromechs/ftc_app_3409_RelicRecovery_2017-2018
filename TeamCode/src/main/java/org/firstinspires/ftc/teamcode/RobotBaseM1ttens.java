@@ -261,6 +261,14 @@ public class RobotBaseM1ttens implements SensorEventListener {
             while(Math.abs(normalize360(zRotation + wrapFix)- shiftedTurnHeading) > error &&
                     Math.abs(cclockwise) >= Math.abs(clockwise) && !Thread.interrupted()) {
 
+                //Figure out how far the robot would have to turn in counterclockwise & clockwise directions
+                cclockwise = zRotation - turnHeading;
+                clockwise = turnHeading - zRotation;
+
+                //Normalize cwise & ccwise values to between 0=360
+                clockwise = normalize360(clockwise);
+                cclockwise = normalize360(cclockwise);
+
                 //Chill a hot decisecond
                 Thread.sleep(10);
             }
@@ -275,6 +283,14 @@ public class RobotBaseM1ttens implements SensorEventListener {
             //While we're not within our error, and we haven't overshot, and the bot is running
             while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
                     Math.abs(clockwise) > Math.abs(cclockwise) && !Thread.interrupted()) {
+
+                //Figure out how far the robot would have to turn in counterclockwise & clockwise directions
+                cclockwise = zRotation - turnHeading;
+                clockwise = turnHeading - zRotation;
+
+                //Normalize cwise & ccwise values to between 0=360
+                clockwise = normalize360(clockwise);
+                cclockwise = normalize360(cclockwise);
 
                 //Hold up a hot decisecond
                 Thread.sleep(10);
@@ -454,10 +470,10 @@ public class RobotBaseM1ttens implements SensorEventListener {
             jewelPosition = JEWEL_UNKNOWN;
         }
 
-        System.out.println("Red xAvg " + xRedAvg);
-        System.out.println("Blue xAvg " + xBlueAvg);
-        callingOpMode.telemetry.addData("totalBlue: ", totalBlue);
-        callingOpMode.telemetry.addData("totalRed: ", totalRed);
+        //System.out.println("Red xAvg " + xRedAvg);
+        //System.out.println("Blue xAvg " + xBlueAvg);
+        //callingOpMode.telemetry.addData("totalBlue: ", totalBlue);
+        //callingOpMode.telemetry.addData("totalRed: ", totalRed);
         //callingOpMode.telemetry.update();
 
     }
