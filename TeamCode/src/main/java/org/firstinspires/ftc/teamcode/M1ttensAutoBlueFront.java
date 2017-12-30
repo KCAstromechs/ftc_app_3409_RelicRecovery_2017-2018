@@ -35,6 +35,8 @@ public class M1ttensAutoBlueFront extends LinearOpMode {
 
         waitForStart();
 
+        robotBase.hasBeenZeroed=false;
+
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {

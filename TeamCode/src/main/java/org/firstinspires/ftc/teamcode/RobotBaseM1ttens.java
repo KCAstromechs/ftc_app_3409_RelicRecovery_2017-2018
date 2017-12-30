@@ -62,7 +62,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mRotationVectorSensor;
 
-    private boolean hasBeenZeroed= false;
+    protected boolean hasBeenZeroed= false;
 
     // This is relative to the initial position of the robot.
     // Possible values are:  0-360
@@ -209,6 +209,9 @@ public class RobotBaseM1ttens implements SensorEventListener {
         motorLeft.setPower(0);
         motorRight.setPower(0);
 
+        callingOpMode.telemetry.addData("COWBOY", zRotation);
+        callingOpMode.telemetry.update();
+
         //Reset the motors for future use, just in case
         motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -296,6 +299,9 @@ public class RobotBaseM1ttens implements SensorEventListener {
                 Thread.sleep(10);
             }
         }
+
+        callingOpMode.telemetry.addData("BEBOP", zRotation);
+        callingOpMode.telemetry.update();
 
         motorRight.setPower(0);
         motorLeft.setPower(0);

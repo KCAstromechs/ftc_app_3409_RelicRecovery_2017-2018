@@ -16,6 +16,8 @@ public class M1ttensAutoRedFront extends LinearOpMode {
 
         waitForStart();
 
+        robotBase.hasBeenZeroed=false;
+
         robotBase.jewelDown();
         switch (0) {
             case 0:
