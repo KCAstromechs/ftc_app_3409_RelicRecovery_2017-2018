@@ -104,6 +104,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -127,7 +128,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
     }
 
-    public void initVuforia() {
+    protected void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "Ac8xsqH/////AAAAGcG2OeE2NECwo7mM5f9KX1RKmDT79NqkIHc/ATgW2+loN9Fr8fkfb6jE42RZmiRYeei1FvM2M3kUPdl53j" +
                 "+oeuhahXi7ApkbRv9cef0kbffj+4EkWKWCgQM39sRegfX+os6PjJh1fwGdxxijW0CYXnp2Rd1vkTjIs/cW2/7TFTtuJTkc17l" +
@@ -144,7 +145,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         relicTrackables.activate();
     }
 
-    protected void driveStraight(double inches, int heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
+    protected void driveStraight(double inches, float heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
 
     /**
      * Tells the robot to drive forward at a certain heading for a specified distance
@@ -152,7 +153,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
      * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
      * @param power amount of power given to motors, does not affect distance driven, absolute value from 0 to 1
      */
-    protected void driveStraight(double inches, int heading, double power) throws InterruptedException {
+    protected void driveStraight(double inches, float heading, double power) throws InterruptedException {
         int target = (int) (inches * COUNTS_PER_INCH);          //translates the number of inches to be driven into encoder ticks
         double error;                                           //The number of degrees between the true heading and desired heading
         double correction;                                      //Modifies power to account for error
@@ -208,9 +209,6 @@ public class RobotBaseM1ttens implements SensorEventListener {
         //When the drive is finished, it is time to turn off the drive motors
         motorLeft.setPower(0);
         motorRight.setPower(0);
-
-        callingOpMode.telemetry.addData("COWBOY", zRotation);
-        callingOpMode.telemetry.update();
 
         //Reset the motors for future use, just in case
         motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -300,9 +298,6 @@ public class RobotBaseM1ttens implements SensorEventListener {
             }
         }
 
-        callingOpMode.telemetry.addData("BEBOP", zRotation);
-        callingOpMode.telemetry.update();
-
         motorRight.setPower(0);
         motorLeft.setPower(0);
 
@@ -323,6 +318,19 @@ public class RobotBaseM1ttens implements SensorEventListener {
     }
     protected void jewelUp(){
         servoJewel.setPosition(0.72);
+    }
+
+
+    protected void setLifterHeight (int target) throws InterruptedException {
+        if(target > motorLifter.getCurrentPosition()) {
+            motorLifter.setPower(0.75);
+            while (motorLifter.getCurrentPosition() < target) Thread.sleep(10);
+            motorLifter.setPower(0);
+        } else {
+            motorLifter.setPower(-0.75);
+            while (motorLifter.getCurrentPosition() > target) Thread.sleep(10);
+            motorLifter.setPower(0);
+        }
     }
 
 
