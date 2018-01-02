@@ -48,6 +48,10 @@ public class M1ttensAutoBlueFront extends LinearOpMode {
             }
         });
 
+        robotBase.grabberClose();
+        sleep(500);
+        robotBase.setLifterHeight(500);
+
         robotBase.vision(475, 480);
 
         robotBase.jewelDown();
@@ -62,18 +66,36 @@ public class M1ttensAutoBlueFront extends LinearOpMode {
         }
         robotBase.jewelUp();
 
-        robotBase.turn(270);
+        robotBase.turn(282);
         switch (RobotBaseM1ttens.pictoPosition) {
             case LEFT:
-                robotBase.driveStraight(25, 270);
+                robotBase.driveStraight(28, 270);
                 break;
             case CENTER:
-                robotBase.driveStraight(33, 270);
+                robotBase.driveStraight(36, 270);
                 break;
             case RIGHT:
-                robotBase.driveStraight(42, 270);
+                robotBase.driveStraight(44, 270);
+                break;
+            case UNKNOWN:
+                robotBase.driveStraight(33, 270);
                 break;
         }
         robotBase.turn(180);
+
+        robotBase.driveStraight(6, 180);
+
+        robotBase.grabberOpen();
+
+        robotBase.driveStraight(6, 180, -0.5);
+
+        robotBase.setLifterHeight(100);
+
+        robotBase.driveStraight(6, 180);
+        robotBase.driveStraight(6, 180, -0.5);
+        robotBase.driveStraight(7, 180);
+        robotBase.driveStraight(6, 180, -0.5);
+        robotBase.driveStraight(8, 180);
+        robotBase.driveStraight(3.5, 180, -0.5);
     }
 }
