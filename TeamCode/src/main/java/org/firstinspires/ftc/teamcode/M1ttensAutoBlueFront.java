@@ -23,6 +23,7 @@ public class M1ttensAutoBlueFront extends LinearOpMode {
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
 
+        //create the alignment box for the robot initially
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -36,7 +37,7 @@ public class M1ttensAutoBlueFront extends LinearOpMode {
         waitForStart();
 
         robotBase.hasBeenZeroed=false;
-
+         //erase the alignment box
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -35,9 +35,8 @@ public class MVPauto extends LinearOpMode {
                 appUtil.getActivity().addContentView(squaresOverlay, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
         });
-
         waitForStart();
-
+        System.out.println("SSS passed waitforstart()");
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -49,6 +48,8 @@ public class MVPauto extends LinearOpMode {
         });
 
         robotBase.vision(475, 480);
+
+        System.out.println("SSS passed vision()");
 
         telemetry.addData("jewel", robotBase.jewelPosition);
         telemetry.addData("picto", robotBase.pictoPosition);
