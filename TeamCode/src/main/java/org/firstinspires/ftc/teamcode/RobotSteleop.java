@@ -56,10 +56,7 @@ public class RobotSteleop extends OpMode {
             backRightPower = right + rightT - leftT;
         }
 
-        reducePowers(frontLeftPower);
-        reducePowers(frontRightPower);
-        reducePowers(backLeftPower);
-        reducePowers(backRightPower);
+        reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
 
         motorFrontLeft.setPower(frontLeftPower);
         motorFrontRight.setPower(frontRightPower);

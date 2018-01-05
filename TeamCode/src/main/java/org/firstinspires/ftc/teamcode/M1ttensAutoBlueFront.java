@@ -57,10 +57,10 @@ public class M1ttensAutoBlueFront extends LinearOpMode {
         robotBase.jewelDown();
         sleep(500);
         switch (RobotBaseM1ttens.jewelPosition) {
-            case 1:
+            case RobotBaseM1ttens.JEWEL_BLUE_RED:
                 robotBase.turn(10);
                 break;
-            case 2:
+            case RobotBaseM1ttens.JEWEL_RED_BLUE:
                 robotBase.turn(350);
                 break;
         }
