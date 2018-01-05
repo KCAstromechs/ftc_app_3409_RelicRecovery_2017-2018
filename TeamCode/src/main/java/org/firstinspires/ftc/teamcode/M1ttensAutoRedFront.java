@@ -19,10 +19,13 @@ public class M1ttensAutoRedFront extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        //initialize all bot stuff
         robotBase = new RobotBaseM1ttens();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
 
+        //initialize green square for lineup
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -37,6 +40,7 @@ public class M1ttensAutoRedFront extends LinearOpMode {
 
         robotBase.hasBeenZeroed=false;
 
+        //get rid of green square
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -47,24 +51,28 @@ public class M1ttensAutoRedFront extends LinearOpMode {
             }
         });
 
+        //grab glyph and lift it up
         robotBase.grabberClose();
         sleep(500);
         robotBase.setLifterHeight(500);
 
+        //look at jewel and pictograph
         robotBase.vision(475, 480);
 
+        //knock off correct jewel
         robotBase.jewelDown();
         sleep(500);
         switch (RobotBaseM1ttens.jewelPosition) {
-            case 1:
+            case RobotBaseM1ttens.JEWEL_BLUE_RED:
                 robotBase.turn(350);
                 break;
-            case 2:
+            case RobotBaseM1ttens.JEWEL_RED_BLUE:
                 robotBase.turn(10);
                 break;
         }
         robotBase.jewelUp();
 
+        //move to drop the glyph in the correct column
         robotBase.turn(78);
         switch (RobotBaseM1ttens.pictoPosition) {
             case LEFT:
@@ -80,16 +88,14 @@ public class M1ttensAutoRedFront extends LinearOpMode {
                 robotBase.driveStraight(33, 90);
                 break;
         }
+        //go actually drop glyph
         robotBase.turn(180);
-
         robotBase.driveStraight(6, 180);
-
         robotBase.grabberOpen();
 
+        //lowre lifter and smash glyph into cryptobox
         robotBase.driveStraight(6, 180, -0.5);
-
         robotBase.setLifterHeight(100);
-
         robotBase.driveStraight(6, 180);
         robotBase.driveStraight(6, 180, -0.5);
         robotBase.driveStraight(7, 180);
