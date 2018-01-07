@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Environment;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,10 +19,12 @@ import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.internal.vuforia.VuforiaLocalizerImpl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -137,7 +140,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
-        vuforia.setFrameQueueCapacity(1);
+        vuforia.setFrameQueueCapacity(0);
 
         //Set up the trackables for the pictographs so we can grab that information later
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
@@ -149,8 +152,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
     /**
      * Tells the robot to drive forward at a certain heading for a specified distance
-     * @param inches number of inches we ask the robot to drive, negative numbers drive bot backwards
-     * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
+     * @param inches number of inches we ask the robot to drive, only posative numbers     * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
      * @param power amount of power given to motors, does not affect distance driven, absolute value from 0 to 1
      */
     protected void driveStraight(double inches, float heading, double power) throws InterruptedException {
@@ -491,7 +493,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         //callingOpMode.telemetry.update();
 
     }
-
+    boolean isStopped;
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         SensorManager.getRotationMatrixFromVector(rotationMatrix, sensorEvent.values);
@@ -512,6 +514,14 @@ public class RobotBaseM1ttens implements SensorEventListener {
         if(sensorDataCounter % 100 == 0) {
             //callingOpMode.telemetry.addData("zRotation: ", zRotation);
             //callingOpMode.telemetry.update();
+        }
+        isStopped = ((LinearOpMode)callingOpMode).isStopRequested();
+        if (isStopped) {
+            mSensorManager.unregisterListener(this);
+            //((VuforiaLocalizerImpl)vuforia).close();
+            vuforia.setFrameQueueCapacity(0); //This is a hack to avoid an app crash.
+            vuforia=null;
+            System.out.println("SSS Thread interrupted & vuforia closed");
         }
     }
 

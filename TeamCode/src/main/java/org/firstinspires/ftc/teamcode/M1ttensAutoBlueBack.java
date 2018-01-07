@@ -19,10 +19,13 @@ public class M1ttensAutoBlueBack extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        //initialize all bot stuff
         robotBase = new RobotBaseM1ttens();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
 
+        //initialize green square for lineup
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -37,6 +40,7 @@ public class M1ttensAutoBlueBack extends LinearOpMode {
 
         robotBase.hasBeenZeroed=false;
 
+        //get rid of green square
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -47,24 +51,28 @@ public class M1ttensAutoBlueBack extends LinearOpMode {
             }
         });
 
+        //grab glyph and lift it up
         robotBase.grabberClose();
         sleep(500);
         robotBase.setLifterHeight(500);
 
+        //look at jewel and pictograph
         robotBase.vision(475, 480);
 
+        //knock off correct jewel
         robotBase.jewelDown();
         sleep(500);
         switch (RobotBaseM1ttens.jewelPosition) {
-            case 1:
+            case RobotBaseM1ttens.JEWEL_BLUE_RED:
                 robotBase.turn(10);
                 break;
-            case 2:
+            case RobotBaseM1ttens.JEWEL_RED_BLUE:
                 robotBase.turn(350);
                 break;
         }
         robotBase.jewelUp();
 
+        //drop the glyph in the correct column
         robotBase.turn(0);
         robotBase.driveStraight(36, 0);
         switch (RobotBaseM1ttens.pictoPosition) {

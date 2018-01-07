@@ -22,10 +22,13 @@ public class MVPauto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        //init bot stuff
         robotBase = new RobotBaseM1ttens();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
 
+        //init green square
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -35,9 +38,10 @@ public class MVPauto extends LinearOpMode {
                 appUtil.getActivity().addContentView(squaresOverlay, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
         });
-
         waitForStart();
+        System.out.println("SSS passed waitforstart()");
 
+        //get rid of green square
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -48,12 +52,16 @@ public class MVPauto extends LinearOpMode {
             }
         });
 
+        //look for jewel and picto
         robotBase.vision(475, 480);
+
+        System.out.println("SSS passed vision()");
 
         telemetry.addData("jewel", robotBase.jewelPosition);
         telemetry.addData("picto", robotBase.pictoPosition);
         telemetry.update();
 
+        //try moving
         robotBase.turn(270);
         robotBase.driveStraight(32, 270);
         robotBase.turn(180);
