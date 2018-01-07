@@ -67,17 +67,17 @@ public class M1ttensAutoRedFront extends LinearOpMode {
 
         robotBase.turn(78);
         switch (RobotBaseM1ttens.pictoPosition) {
-            case LEFT:
+            case RIGHT:
                 robotBase.driveStraight(28, 90);
                 break;
             case CENTER:
                 robotBase.driveStraight(36, 90);
                 break;
-            case RIGHT:
+            case LEFT:
                 robotBase.driveStraight(44, 90);
                 break;
             case UNKNOWN:
-                robotBase.driveStraight(33, 90);
+                robotBase.driveStraight(36, 90);
                 break;
         }
         robotBase.turn(180);

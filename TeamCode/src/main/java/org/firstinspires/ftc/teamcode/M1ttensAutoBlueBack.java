@@ -90,11 +90,11 @@ public class M1ttensAutoBlueBack extends LinearOpMode {
                 robotBase.driveStraight(3.5, 254, -0.5);
                 break;
             case UNKNOWN:
-                robotBase.turn(244);
-                robotBase.driveStraight(40, 244);
+                robotBase.turn(242);
+                robotBase.driveStraight(40, 242);
                 robotBase.grabberOpen();
                 sleep(500);
-                robotBase.driveStraight(3.5, 244, -0.5);
+                robotBase.driveStraight(3.5, 242, -0.5);
                 break;
         }
 

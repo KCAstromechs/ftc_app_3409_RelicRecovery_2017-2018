@@ -14,6 +14,7 @@ public class Teleop extends OpMode {
     DcMotor motorLifter;
     Servo servoLeft;
     Servo servoRight;
+    Servo servoJewel;
 
     private static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
             0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
@@ -50,16 +51,26 @@ public class Teleop extends OpMode {
         motorLifter=hardwareMap.dcMotor.get("up");
         servoLeft=hardwareMap.servo.get("leftServo");
         servoRight=hardwareMap.servo.get("rightServo");
+        servoJewel=hardwareMap.servo.get("jewelServo");
+
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+
+        servoLeft.setPosition(0.1);
+        servoRight.setPosition(0.63);
+        servoJewel.setPosition(0.72);
     }
 
     @Override
     public void loop() {
 
-        double left = (gamepad1.left_stick_y);
+        double left = -(gamepad1.left_stick_y);
         double right = -(gamepad1.right_stick_y);
         double left2 = -(gamepad2.left_stick_y);
 
