@@ -493,7 +493,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         //callingOpMode.telemetry.update();
 
     }
-    boolean isStopped;
+    //boolean isStopped;
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         SensorManager.getRotationMatrixFromVector(rotationMatrix, sensorEvent.values);
@@ -515,14 +515,14 @@ public class RobotBaseM1ttens implements SensorEventListener {
             //callingOpMode.telemetry.addData("zRotation: ", zRotation);
             //callingOpMode.telemetry.update();
         }
-        isStopped = ((LinearOpMode)callingOpMode).isStopRequested();
+        /*isStopped = ((LinearOpMode)callingOpMode).isStopRequested();
         if (isStopped) {
             mSensorManager.unregisterListener(this);
             //((VuforiaLocalizerImpl)vuforia).close();
             vuforia.setFrameQueueCapacity(0); //This is a hack to avoid an app crash.
             vuforia=null;
             System.out.println("SSS Thread interrupted & vuforia closed");
-        }
+        }*/
     }
 
 
