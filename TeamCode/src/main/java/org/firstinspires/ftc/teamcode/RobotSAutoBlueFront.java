@@ -14,9 +14,9 @@ public class RobotSAutoBlueFront extends LinearOpMode {
         waitForStart();
         robotBase.driveStraight(36, 0);
         robotBase.turn(90);
-        robotBase.driveStraight(6, 90, -0.6);
+        robotBase.driveStraight(9, 90, -0.6);
         sleep(500);
-        robotBase.driveStraight(6, 90);
-        robotBase.driveStraight(6, 90, -0.6);
+        robotBase.driveStraight(9, 90);
+        robotBase.driveStraight(9, 90, -0.6);
         }
 }
