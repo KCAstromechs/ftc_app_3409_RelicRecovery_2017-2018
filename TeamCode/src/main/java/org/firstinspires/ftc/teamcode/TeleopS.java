@@ -16,23 +16,27 @@ public class TeleopS extends OpMode {
     DcMotor motorFrontRight;
     DcMotor motorBackRight;
     DcMotor motorBackLeft;
-
+    DcMotor motorScoop;
+    DcMotor motorLifter;
     //variables to be used in manipulating motor power
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
 
     @Override
     public void init() {
 
+
+
         //Connect motor variables to real life motors
         motorFrontLeft = hardwareMap.dcMotor.get("frontLeft");
         motorFrontRight = hardwareMap.dcMotor.get("frontRight");
         motorBackRight = hardwareMap.dcMotor.get("backRight");
         motorBackLeft = hardwareMap.dcMotor.get("backLeft");
-
+        motorScoop = hardwareMap.dcMotor.get("scoop");
+        motorLifter = hardwareMap.dcMotor.get("lifter");
         //Reverse the left-side motors
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
@@ -44,6 +48,26 @@ public class TeleopS extends OpMode {
         leftT = gamepad1.left_trigger;
         rightT = gamepad1.right_trigger;
 
+        if (gamepad1.a){
+            motorLifter.setPower(0.5);
+        }
+
+        else if (gamepad1.b){
+            motorLifter.setPower(-0.5);
+        }
+        else
+        {
+            motorLifter.setPower(0);
+        }
+        if (gamepad1.dpad_up) {
+            motorScoop.setPower(0.5);
+        }
+        else if (gamepad1.dpad_down){
+            motorScoop.setPower(-0.5);
+        }else
+        {
+            motorScoop.setPower(0);
+        }
         //If you're barely pushing down on the joysticks or the triggers, don't go
         if (Math.abs(left + leftT + rightT) < 0.3) {
             frontLeftPower = 0;
