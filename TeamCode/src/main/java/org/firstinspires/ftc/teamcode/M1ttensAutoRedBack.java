@@ -79,34 +79,30 @@ public class M1ttensAutoRedBack extends LinearOpMode {
             case LEFT:
                 robotBase.turn(107);
                 robotBase.driveStraight(36, 107);
-                robotBase.grabberMid();
+                robotBase.grabberOpen();
                 sleep(500);
                 robotBase.driveStraight(3.5, 107, -0.5);
-                robotBase.grabberOpen();
                 break;
             case CENTER:
                 robotBase.turn(115);
                 robotBase.driveStraight(40, 115);
-                robotBase.grabberMid();
+                robotBase.grabberOpen();
                 sleep(500);
                 robotBase.driveStraight(3.5, 115, -0.5);
-                robotBase.grabberOpen();
                 break;
             case RIGHT:
                 robotBase.turn(123);
                 robotBase.driveStraight(46, 123);
-                robotBase.grabberMid();
+                robotBase.grabberOpen();
                 sleep(500);
                 robotBase.driveStraight(3.5, 123, -0.5);
-                robotBase.grabberOpen();
                 break;
             case UNKNOWN:
                 robotBase.turn(115);
                 robotBase.driveStraight(40, 115);
-                robotBase.grabberMid();
+                robotBase.grabberOpen();
                 sleep(500);
                 robotBase.driveStraight(3.5, 115, -0.5);
-                robotBase.grabberOpen();
                 break;
         }
 

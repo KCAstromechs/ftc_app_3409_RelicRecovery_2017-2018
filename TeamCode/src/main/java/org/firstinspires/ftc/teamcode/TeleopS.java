@@ -23,9 +23,6 @@ public class TeleopS extends OpMode {
 
     @Override
     public void init() {
-
-
-
         //Connect motor variables to real life motors
         motorFrontLeft = hardwareMap.dcMotor.get("frontLeft");
         motorFrontRight = hardwareMap.dcMotor.get("frontRight");
@@ -36,6 +33,7 @@ public class TeleopS extends OpMode {
         //Reverse the left-side motors
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorScoop.setDirection(DcMotorSimple.Direction.REVERSE);
         motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
@@ -48,26 +46,22 @@ public class TeleopS extends OpMode {
         leftT = gamepad1.left_trigger;
         rightT = gamepad1.right_trigger;
 
-        if (gamepad1.a){
+        if (gamepad2.left_bumper){
             motorLifter.setPower(0.5);
-        }
-
-        else if (gamepad1.b){
+        } else if (gamepad2.left_trigger>0.35){
             motorLifter.setPower(-0.5);
-        }
-        else
-        {
+        } else {
             motorLifter.setPower(0);
         }
-        if (gamepad1.dpad_up) {
-            motorScoop.setPower(0.5);
-        }
-        else if (gamepad1.dpad_down){
-            motorScoop.setPower(-0.5);
-        }else
-        {
+
+        if (gamepad2.right_bumper) {
+            motorScoop.setPower(0.1);
+        } else if (gamepad2.right_trigger>0.35){
+            motorScoop.setPower(-0.1);
+        } else {
             motorScoop.setPower(0);
         }
+
         //If you're barely pushing down on the joysticks or the triggers, don't go
         if (Math.abs(left + leftT + rightT) < 0.3) {
             frontLeftPower = 0;
@@ -87,8 +81,8 @@ public class TeleopS extends OpMode {
             backRightPower = 0;
         }
         else {
-            frontRightPower = right - rightT + leftT;
-            backRightPower = right + rightT - leftT;
+            frontRightPower = right + rightT - leftT;
+            backRightPower = right - rightT + leftT;
         }
 
         //if any motor power is over one, this will scale it back and all the other motors' powers correspondingly

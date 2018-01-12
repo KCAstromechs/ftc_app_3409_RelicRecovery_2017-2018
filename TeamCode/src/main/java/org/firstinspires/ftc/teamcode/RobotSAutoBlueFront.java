@@ -4,9 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-/**
- * Created by N2Class1 on 1/10/2018.
- */
 @Autonomous(name="RobotS_AutoBlueFront", group="RobotS")
 public class RobotSAutoBlueFront extends LinearOpMode {
     RobotBaseS robotBase;
