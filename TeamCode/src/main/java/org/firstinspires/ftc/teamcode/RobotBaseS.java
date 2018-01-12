@@ -22,7 +22,7 @@ public class RobotBaseS implements SensorEventListener{
     private HardwareMap hardwareMap;
 
     private static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
-    private static final double DRIVE_GEAR_REDUCTION = 26.0/32.0;     // This is < 1.0 if geared UP
+    private static final double DRIVE_GEAR_REDUCTION = 32.0/26.0;     // This is < 1.0 if geared UP
     private static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
 
     //encoder ticks per one inch
