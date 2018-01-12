@@ -91,11 +91,12 @@ public class M1ttensAutoRedFront extends LinearOpMode {
         //go actually drop glyph
         robotBase.turn(180);
         robotBase.driveStraight(6, 180);
-        robotBase.grabberOpen();
+        robotBase.grabberMid();
 
         //lowre lifter and smash glyph into cryptobox
         robotBase.driveStraight(6, 180, -0.5);
         robotBase.setLifterHeight(100);
+        robotBase.grabberOpen();
         robotBase.driveStraight(6, 180);
         robotBase.driveStraight(6, 180, -0.5);
         robotBase.driveStraight(7, 180);

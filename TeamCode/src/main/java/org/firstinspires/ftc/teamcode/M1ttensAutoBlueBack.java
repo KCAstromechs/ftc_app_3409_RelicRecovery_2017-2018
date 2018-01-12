@@ -79,30 +79,34 @@ public class M1ttensAutoBlueBack extends LinearOpMode {
             case LEFT:
                 robotBase.turn(235);
                 robotBase.driveStraight(46, 235);
-                robotBase.grabberOpen();
+                robotBase.grabberMid();
                 sleep(500);
                 robotBase.driveStraight(3.5, 235, -0.5);
+                robotBase.grabberOpen();
                 break;
             case CENTER:
                 robotBase.turn(242);
                 robotBase.driveStraight(40, 242);
-                robotBase.grabberOpen();
+                robotBase.grabberMid();
                 sleep(500);
                 robotBase.driveStraight(3.5, 242, -0.5);
+                robotBase.grabberOpen();
                 break;
             case RIGHT:
                 robotBase.turn(254);
                 robotBase.driveStraight(36, 254);
-                robotBase.grabberOpen();
+                robotBase.grabberMid();
                 sleep(500);
                 robotBase.driveStraight(3.5, 254, -0.5);
+                robotBase.grabberOpen();
                 break;
             case UNKNOWN:
                 robotBase.turn(242);
                 robotBase.driveStraight(40, 242);
-                robotBase.grabberOpen();
+                robotBase.grabberMid();
                 sleep(500);
                 robotBase.driveStraight(3.5, 242, -0.5);
+                robotBase.grabberOpen();
                 break;
         }
 

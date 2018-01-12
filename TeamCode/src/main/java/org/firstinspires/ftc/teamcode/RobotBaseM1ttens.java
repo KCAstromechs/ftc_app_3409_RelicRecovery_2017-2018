@@ -140,7 +140,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
-        vuforia.setFrameQueueCapacity(0);
+        vuforia.setFrameQueueCapacity(1);
 
         //Set up the trackables for the pictographs so we can grab that information later
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
@@ -308,10 +308,14 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
     protected void grabberOpen(){
         servoLeft.setPosition(0.1);
-        servoRight.setPosition(0.63);
+        servoRight.setPosition(0.61);
+    }
+    protected void grabberMid(){
+        servoLeft.setPosition(0.32);
+        servoRight.setPosition(0.39);
     }
     protected void grabberClose(){
-        servoLeft.setPosition(0.45);
+        servoLeft.setPosition(0.44);
         servoRight.setPosition(0.27);
     }
 
@@ -350,6 +354,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
         System.out.println("timestamp before getting image");
         callingOpMode.telemetry.addData("timestamp ", "before getting image");
+        callingOpMode.telemetry.update();
         //Take an image from Vuforia in the correct format
         VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
         for (int i = 0; i < frame.getNumImages(); i++) {
@@ -371,7 +376,8 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
 
         System.out.println("timestamp before processing loop");
-        callingOpMode.telemetry.addData("timestamp ", "before getting image");
+        callingOpMode.telemetry.addData("timestamp ", "before processing image");
+        callingOpMode.telemetry.update();
         for (int i = startXpx; i < startXpx + 245; i++) {
 
 //            System.out.println("loop #" + i);
@@ -411,6 +417,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
 
         callingOpMode.telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
+        callingOpMode.telemetry.update();
         System.out.println("timestamp after processing loop, before save pic/grab picto");
 
         //now grab the pictograph information since it's had time to set up, and shut it down
@@ -459,6 +466,7 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
         System.out.println("timestamp after save pic");
         callingOpMode.telemetry.addData("timestamp ", "after save pic");
+        callingOpMode.telemetry.update();
         //Find the averages
         xRedAvg = xRedSum / totalRed;
         xBlueAvg = xBlueSum / totalBlue;

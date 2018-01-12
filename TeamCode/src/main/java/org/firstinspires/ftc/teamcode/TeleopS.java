@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Created by N2Class1 on 12/31/2017.
  */
 @TeleOp(name="RobotS_TeleOp")
-public class TeleOpS extends OpMode {
+public class TeleopS extends OpMode {
 
     //motor declaration
     DcMotor motorFrontLeft;

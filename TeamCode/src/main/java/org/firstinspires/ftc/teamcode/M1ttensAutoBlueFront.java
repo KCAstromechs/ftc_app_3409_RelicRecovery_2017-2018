@@ -85,11 +85,12 @@ public class M1ttensAutoBlueFront extends LinearOpMode {
 
         robotBase.driveStraight(6, 180);
 
-        robotBase.grabberOpen();
+        robotBase.grabberMid();
 
         robotBase.driveStraight(6, 180, -0.5);
 
-        robotBase.setLifterHeight(100);
+        robotBase.grabberOpen();
+        robotBase.setLifterHeight(100);;
 
         robotBase.driveStraight(6, 180);
         robotBase.driveStraight(6, 180, -0.5);

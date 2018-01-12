@@ -27,12 +27,10 @@ public class Teleop extends OpMode {
     //did somebody say
     //kevin is a math nerd!?
 
-    boolean blue = true;
-
-    boolean lb = false;
-    boolean lbLast = false;
-    boolean rb = false;
-    boolean rbLast = false;
+    boolean x = false;
+    boolean xLast = false;
+    boolean b = false;
+    boolean bLast = false;
     boolean a = false;
     boolean aLast = false;
 
@@ -40,8 +38,8 @@ public class Teleop extends OpMode {
     int encoderLifter = 0;
 
 
-    //To explsin the variable naming system, the button name (a, lb, et c.) is the variable for if it should register an input.
-    //The button name Last (aLast, rbLast, et c.) is for the toggle logic;
+    //To explain the variable naming system, the button name (a, x, et c.) is the variable for if it should register an input.
+    //The button name Last (aLast, bLast, et c.) is for the toggle logic;
     //it is for if the button registered an input on the last time through the loop
 
     @Override
@@ -104,26 +102,26 @@ public class Teleop extends OpMode {
         }
 
 
-        if(lbLast) {
-            lb = false;
-            if (!gamepad1.left_bumper) {
-                lbLast = false;
+        if(xLast) {
+            x = false;
+            if (!gamepad2.x) {
+                xLast = false;
             }
         } else {
-            if(gamepad1.left_bumper){
-                lb = true;
-                lbLast = true;
+            if(gamepad2.x){
+                x = true;
+                xLast = true;
             }
         }
-        if(rbLast) {
-            rb = false;
-            if (!gamepad1.right_bumper) {
-                rbLast = false;
+        if(bLast) {
+            b = false;
+            if (!gamepad2.b) {
+                bLast = false;
             }
         } else {
-            if(gamepad1.right_bumper){
-                rb = true;
-                rbLast = true;
+            if(gamepad2.b){
+                b = true;
+                bLast = true;
             }
         }
         if(aLast) {
@@ -138,18 +136,15 @@ public class Teleop extends OpMode {
             }
         }
 
-
-
-        if (lb || rb || a){
-            blue = !blue;
-        }
-
-        if (blue) {
-            servoLeft.setPosition(0.1);
-            servoRight.setPosition(0.63);
-        } else {
+        if (b) {
             servoLeft.setPosition(0.45);
             servoRight.setPosition(0.27);
+        } else if (x) {
+            servoLeft.setPosition(0.1);
+            servoRight.setPosition(0.61);
+        } else if (a) {
+            servoLeft.setPosition(0.32);
+            servoRight.setPosition(0.39);
         }
     }
 
