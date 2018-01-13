@@ -22,11 +22,11 @@ public class RobotBaseS implements SensorEventListener{
     private HardwareMap hardwareMap;
 
     private static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
-    private static final double DRIVE_GEAR_REDUCTION = 13.0/16.0;     // This is < 1.0 if geared UP
+    private static final double DRIVE_GEAR_REDUCTION = 26.0/32.0;     // Numerator is gear on motor; Denominator is gear on wheel
     private static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
 
     //encoder ticks per one inch
-    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
+    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV) / (WHEEL_DIAMETER_INCHES * Math.PI * DRIVE_GEAR_REDUCTION);
 
 
     private static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
@@ -98,15 +98,26 @@ public class RobotBaseS implements SensorEventListener{
         mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
     }
 
-    protected void extendGlyphter () {
+    protected void extendGlyphter () throws InterruptedException {
         int encoderDist = 400;
+        int speed;
+        int lastPos = 0;
+        int stallCount = 0;
 
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorLifter.setPower(0.3);
         while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(encoderDist)) {
-
+            speed = Math.abs(motorLifter.getCurrentPosition()) - lastPos;
+            if(speed < 3) {
+                stallCount++;
+            }
+            if(stallCount > 50) {
+                motorLifter.setPower(-0.3);
+            }
+            lastPos = Math.abs(motorLifter.getCurrentPosition());
+            Thread.sleep(10);
         }
     }
     protected void retractGlyphter () {

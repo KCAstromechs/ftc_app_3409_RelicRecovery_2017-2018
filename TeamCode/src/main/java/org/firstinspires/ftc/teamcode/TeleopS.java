@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by N2Class1 on 12/31/2017.
@@ -18,6 +19,7 @@ public class TeleopS extends OpMode {
     DcMotor motorBackLeft;
     DcMotor motorScoop;
     DcMotor motorLifter;
+    Servo servoGrabberLeft, servoGrabberRight;
     //variables to be used in manipulating motor power
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
 
@@ -30,6 +32,9 @@ public class TeleopS extends OpMode {
         motorBackLeft = hardwareMap.dcMotor.get("backLeft");
         motorScoop = hardwareMap.dcMotor.get("scoop");
         motorLifter = hardwareMap.dcMotor.get("lifter");
+        servoGrabberLeft = hardwareMap.servo.get("grabberLeft");
+        servoGrabberRight = hardwareMap.servo.get("grabberRight");
+
         //Reverse the left-side motors
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -60,6 +65,19 @@ public class TeleopS extends OpMode {
             motorScoop.setPower(-0.1);
         } else {
             motorScoop.setPower(0);
+        }
+
+        if(gamepad2.dpad_left) {
+            servoGrabberLeft.setPosition(1);
+        }
+        if(gamepad2.dpad_right) {
+            servoGrabberLeft.setPosition(0.6);
+        }
+        if(gamepad2.b) {
+            servoGrabberRight.setPosition(0);
+        }
+        if(gamepad2.x) {
+            servoGrabberRight.setPosition(0.4);
         }
 
         //If you're barely pushing down on the joysticks or the triggers, don't go
