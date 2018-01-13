@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.archive;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -78,6 +79,7 @@ import java.util.List;
  * is explained below.
  */
 
+@Disabled
 @Autonomous(name="Pictograph ID Test")
 public class PictographIDTest extends LinearOpMode {
 

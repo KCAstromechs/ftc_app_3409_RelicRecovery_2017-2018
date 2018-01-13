@@ -11,6 +11,7 @@ import android.os.Environment;
 import com.google.blocks.ftcrobotcontroller.util.SoundsUtil;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,6 +39,7 @@ import static android.content.Context.SENSOR_SERVICE;
 /**
  * Created by N2Class1 on 10/19/2017.
  */
+@Disabled
 @Autonomous(name="Rusty Auto RR", group="test")
 public class RustyAutonomousTesting extends LinearOpMode implements SensorEventListener{
     VuforiaLocalizer vuforia;

@@ -6,6 +6,7 @@ import android.os.Environment;
 
 import com.google.blocks.ftcrobotcontroller.util.SoundsUtil;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
@@ -27,6 +28,7 @@ import java.util.Date;
 /**
  * Created by N2Class1 on 9/17/2017.
  */
+@Disabled
 @Autonomous(name = "JewelVisionTest", group = "test")
 public class JewelVisionTest extends LinearOpMode {
     VuforiaLocalizer vuforia;

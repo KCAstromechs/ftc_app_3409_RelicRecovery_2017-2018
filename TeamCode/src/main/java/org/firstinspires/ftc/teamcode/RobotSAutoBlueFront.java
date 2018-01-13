@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Disabled
 @Autonomous(name="RobotS_AutoBlueFront", group="RobotS")
 public class RobotSAutoBlueFront extends LinearOpMode {
     RobotBaseS robotBase;
