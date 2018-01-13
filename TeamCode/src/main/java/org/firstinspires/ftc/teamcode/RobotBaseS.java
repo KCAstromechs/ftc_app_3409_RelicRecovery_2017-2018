@@ -98,6 +98,29 @@ public class RobotBaseS implements SensorEventListener{
         mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
     }
 
+    protected void extendGlyphter () {
+        int encoderDist = 400;
+
+        motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motorLifter.setPower(0.3);
+        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(encoderDist)) {
+
+        }
+    }
+    protected void retractGlyphter () {
+        int encoderDist = 400;
+
+        motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motorLifter.setPower(-0.5);
+        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(encoderDist)) {
+
+        }
+    }
+
     protected void driveStraight(double inches, float heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
 
     /**
