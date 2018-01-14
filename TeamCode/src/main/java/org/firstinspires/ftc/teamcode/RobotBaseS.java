@@ -1,14 +1,34 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Environment;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
+import com.vuforia.Vuforia;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static android.content.Context.SENSOR_SERVICE;
 
@@ -21,6 +41,8 @@ public class RobotBaseS implements SensorEventListener{
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
 
+    private Servo servoSlapperHorizontal, servoSlapperVertical;
+
     private static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 26.0/32.0;     // Numerator is gear on motor; Denominator is gear on wheel
     private static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
@@ -31,6 +53,14 @@ public class RobotBaseS implements SensorEventListener{
 
     private static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
             0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+
+    //sets variables for vision
+    private VuforiaLocalizer vuforia;
+    protected static int jewelPosition;                           //holds the value of one of the above jewel positions for reference
+    protected static RelicRecoveryVuMark pictoPosition;           //holds one of the pictograph position for reference
+    static final int JEWEL_UNKNOWN = 0;
+    static final int JEWEL_BLUE_RED = 1;
+    static final int JEWEL_RED_BLUE = 2;
 
     //variables for gyro operation
     private float zero;
@@ -47,6 +77,9 @@ public class RobotBaseS implements SensorEventListener{
 
     protected boolean hasBeenZeroed= false;
 
+    VuforiaTrackables relicTrackables;
+    VuforiaTrackable relicTemplate;
+
     // This is relative to the initial position of the robot.
     // Possible values are:  0-360
     // 0 is set as straight ahead of the robot, 90 is the right, 270 is to the left
@@ -59,10 +92,12 @@ public class RobotBaseS implements SensorEventListener{
     protected static final double turnSpeed = 0.4;
 
 
+
     protected void init(OpMode _callingOpMode, HardwareMap _hardwareMap) {
         callingOpMode = _callingOpMode;
         hardwareMap = _hardwareMap;
 
+        //retrieve all motors and servos from the hardware map
         motorFrontLeft = hardwareMap.dcMotor.get("frontLeft");
         motorFrontRight = hardwareMap.dcMotor.get("frontRight");
         motorBackRight = hardwareMap.dcMotor.get("backRight");
@@ -71,37 +106,72 @@ public class RobotBaseS implements SensorEventListener{
         motorScoop = hardwareMap.dcMotor.get("scoop");
         motorLifter = hardwareMap.dcMotor.get("lifter");
 
+        servoSlapperHorizontal = hardwareMap.servo.get("slapperHorizontal");
+        servoSlapperVertical = hardwareMap.servo.get("slapperVertical");
+
+        //reverses left side so that the robot drives forward when positive power is applied to all drive motors
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
 
+        //Resets all encoders
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //Ensures that speed control is turned off
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        //Brake the motors when power is 0
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         encoderMotor = motorFrontLeft;
 
+        //sets all initial servo values
+        servoSlapperVertical.setPosition(0.875);
+        servoSlapperHorizontal.setPosition(0.35);
+        //TODO put grabber servos in
+
         //Accessing gyro and accelerometer from Android
         mSensorManager = (SensorManager) hardwareMap.appContext.getSystemService(SENSOR_SERVICE);
         mRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
     }
+    protected void initVuforia() {
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = "Ac8xsqH/////AAAAGcG2OeE2NECwo7mM5f9KX1RKmDT79NqkIHc/ATgW2+loN9Fr8fkfb6jE42RZmiRYeei1FvM2M3kUPdl53j" +
+                "+oeuhahXi7ApkbRv9cef0kbffj+4EkWKWCgQM39sRegfX+os6PjJh1fwGdxxijW0CYXnp2Rd1vkTjIs/cW2/7TFTtuJTkc17l" +
+                "+FNJAeqLEfRnwrQ0FtxvBjO8yQGcLrpeKJKX/+sN+1kJ/cvO345RYfPSoG4Pi+wo/va1wmhuZ/WCLelUeww8w8u0douStuqcuz" +
+                "ufrsWmQThsHqQDfDh0oGKZGIckh3jwCV2ABkP0lT6ICBDm4wOZ8REoyiY2kjsDnnFG6cT803cfzuVuPJl+uGTEf";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
+        vuforia.setFrameQueueCapacity(1);
 
+        //Set up the trackables for the pictographs so we can grab that information later
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = relicTrackables.get(0);
+        relicTrackables.activate();
+    }
+
+    /**
+     * Extends the glypter mechanism, hopefully placing a glyph into the cryptobox.
+     * @throws InterruptedException
+     */
     protected void extendGlyphter () throws InterruptedException {
+        //the distance that the motor is ran before the springs take over
         int encoderDist = 400;
+        //change in encoder clicks per loop
         int speed;
         int lastPos = 0;
+        //measures the amount of stall
         int stallCount = 0;
 
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -131,6 +201,173 @@ public class RobotBaseS implements SensorEventListener{
 
         }
     }
+
+    protected void slapJewel (boolean forward) {
+        servoSlapperHorizontal.setPosition(0.1);
+    }
+
+    protected void vision(int startXpx, int startYpx) throws InterruptedException {
+        int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
+        int xRedAvg = 0;                            //Average X position of red pixels to help find red side location
+        int xBlueAvg = 0;                           //Average X position of blue pixels to help find blue side location
+        int totalBlue = 1;                          //Total number of blue pixels to help find blue side location
+        int totalRed = 1;                           //Total number of red pixels to help find red side location
+        int xRedSum = 0;                            //Added-up X pos of red pixels to find red side location
+        int xBlueSum = 0;                           //Added-up X pos of blue pix to find blue side location
+        int idx = 0;                                //Ensures we get correct image type from Vuforia
+        float thisS;
+        float minRGB, maxRGB;
+
+        System.out.println("timestamp before getting image");
+        callingOpMode.telemetry.addData("timestamp ", "before getting image");
+        callingOpMode.telemetry.update();
+        //Take an image from Vuforia in the correct format
+        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+        for (int i = 0; i < frame.getNumImages(); i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                idx = i;
+                break;
+            }
+        }
+
+        //Create an instance of the image and then of the pixels
+        Image image = frame.getImage(idx);
+        ByteBuffer px = image.getPixels();
+
+        //Origin: top right of image (current guess)
+
+        //Loop through every pixel column
+        int h = image.getHeight();
+        int w = image.getWidth();
+
+
+        System.out.println("timestamp before processing loop");
+        callingOpMode.telemetry.addData("timestamp ", "before processing image");
+        callingOpMode.telemetry.update();
+        for (int i = startXpx; i < startXpx + 245; i++) {
+
+//            System.out.println("loop #" + i);
+            //If the bot stops you should really stop.
+            if(Thread.interrupted()) break;
+
+            //Loop through a certain number of rows to cover a certain area of the image
+            for (int j = startYpx; j < startYpx + 275; j++) { //925, 935
+
+                //Take the RGB vals of current pix
+                thisR = px.get(i * w * 3 + (j * 3)) & 0xFF;
+                thisG = px.get(i * w * 3 + (j * 3) + 1) & 0xFF;
+                thisB = px.get(i * w * 3 + (j * 3) + 2) & 0xFF;
+
+
+                //Convert the RGB vals into S
+                minRGB = Math.min(thisR, Math.min(thisB, thisG)) + 1;
+                maxRGB = Math.max(thisR, Math.max(thisB, thisG)) + 1;
+                thisS = (maxRGB - minRGB) / maxRGB;
+                boolean isBlue;
+                //System.out.println("Saturation: " + thisS);
+
+                //We now have the colors (one byte each) for any pixel, (j, i) so we can add to the totals
+                if (thisS >= 0.95) {
+                    //                  System.out.println("Jewel pixel found");
+                    isBlue = thisB - thisR > 0;
+                    if (isBlue) {
+                        totalBlue++;
+                        xBlueSum += i;
+                    } else if (!isBlue) {
+                        totalRed++;
+                        xRedSum += i;
+                    }
+                }
+            }
+        }
+
+
+        callingOpMode.telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
+        callingOpMode.telemetry.update();
+        System.out.println("timestamp after processing loop, before save pic/grab picto");
+
+        //now grab the pictograph information since it's had time to set up, and shut it down
+        pictoPosition = RelicRecoveryVuMark.from(relicTemplate);
+        relicTrackables.deactivate();
+
+        //save picture block
+        boolean bSavePicture = false;
+        if (bSavePicture) {
+            // Reset the pixel pointer to the start of the image
+            px = image.getPixels();
+            // Create a buffer to hold 32-bit image dataa and fill it
+            int bmpData[] = new int[w * h];
+            int pixel;
+            int index = 0;
+            int x,y;
+            for (y = 0; y < h; y++) {
+                for (x = 0; x < w; x++) {
+                    thisR = px.get() & 0xFF;
+                    thisG = px.get() & 0xFF;
+                    thisB = px.get() & 0xFF;
+                    bmpData[index] = Color.rgb(thisR, thisG, thisB);
+                    index++;
+                }
+            }
+            // Now create a bitmap object from the buffer
+            Bitmap bmp = Bitmap.createBitmap(bmpData, w, h, Bitmap.Config.ARGB_8888);
+            // And save the bitmap to the file system
+            // NOTE:  AndroidManifest.xml needs <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            try {
+                //to convert Date to String, use format method of SimpleDateFormat class.
+                DateFormat dateFormat = new SimpleDateFormat("mm-dd__hh-mm-ss");
+                String strDate = dateFormat.format(new Date());
+                String path = Environment.getExternalStorageDirectory() + "/Snapshot__" + strDate + ".png";
+                System.out.println("Snapshot filename" + path);
+                File file = new File(path);
+                file.createNewFile();
+                FileOutputStream fos = new FileOutputStream(file);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                System.out.println("Snapshot exception" + e.getStackTrace().toString());
+            }
+        }
+
+        System.out.println("timestamp after save pic");
+        callingOpMode.telemetry.addData("timestamp ", "after save pic");
+        callingOpMode.telemetry.update();
+        //Find the averages
+        xRedAvg = xRedSum / totalRed;
+        xBlueAvg = xBlueSum / totalBlue;
+
+
+        /*THIS BLOCK OF CODE IS FOR WHEN TWO JEWELS ARE IN SIGHT*/
+        //set jewel var based on results
+        /*if(xBlueAvg > xRedAvg) {
+            jewelPosition = JEWEL_BLUE_RED;
+        }
+        else if(xBlueAvg < xRedAvg) {
+            jewelPosition = JEWEL_RED_BLUE;
+        }
+        else {
+            jewelPosition = JEWEL_UNKNOWN;
+        }*/
+
+        if(totalBlue > totalRed) {
+            jewelPosition = JEWEL_BLUE_RED;
+        }
+        else if(totalRed > totalBlue) {
+            jewelPosition = JEWEL_RED_BLUE;
+        }
+        else {
+            jewelPosition = JEWEL_UNKNOWN;
+        }
+
+        //System.out.println("Red xAvg " + xRedAvg);
+        //System.out.println("Blue xAvg " + xBlueAvg);
+        //callingOpMode.telemetry.addData("totalBlue: ", totalBlue);
+        //callingOpMode.telemetry.addData("totalRed: ", totalRed);
+        //callingOpMode.telemetry.update();
+
+    }
+
 
     protected void driveStraight(double inches, float heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
 

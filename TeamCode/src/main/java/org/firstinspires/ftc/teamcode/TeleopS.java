@@ -20,6 +20,10 @@ public class TeleopS extends OpMode {
     DcMotor motorScoop;
     DcMotor motorLifter;
     Servo servoGrabberLeft, servoGrabberRight;
+    private Servo servoSlapperHorizontal, servoSlapperVertical;
+
+
+
     //variables to be used in manipulating motor power
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
 
@@ -34,12 +38,18 @@ public class TeleopS extends OpMode {
         motorLifter = hardwareMap.dcMotor.get("lifter");
         servoGrabberLeft = hardwareMap.servo.get("grabberLeft");
         servoGrabberRight = hardwareMap.servo.get("grabberRight");
+        servoSlapperHorizontal = hardwareMap.servo.get("slapperHorizontal");
+        servoSlapperVertical = hardwareMap.servo.get("slapperVertical");
 
         //Reverse the left-side motors
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorScoop.setDirection(DcMotorSimple.Direction.REVERSE);
         motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        servoSlapperVertical.setPosition(0.875);
+        servoSlapperHorizontal.setPosition(0.35);
+
     }
 
     @Override
@@ -68,13 +78,13 @@ public class TeleopS extends OpMode {
         }
 
         if(gamepad2.dpad_left) {
-            servoGrabberLeft.setPosition(1);
+            servoGrabberLeft.setPosition(0.81);
         }
         if(gamepad2.dpad_right) {
             servoGrabberLeft.setPosition(0.6);
         }
         if(gamepad2.b) {
-            servoGrabberRight.setPosition(0);
+            servoGrabberRight.setPosition(0.23);
         }
         if(gamepad2.x) {
             servoGrabberRight.setPosition(0.4);
