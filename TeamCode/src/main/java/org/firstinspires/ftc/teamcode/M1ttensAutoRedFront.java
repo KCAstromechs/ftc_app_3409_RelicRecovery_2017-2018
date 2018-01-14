@@ -97,10 +97,6 @@ public class M1ttensAutoRedFront extends LinearOpMode {
         robotBase.driveStraight(6, 180, -0.5);
         robotBase.setLifterHeight(100);
         robotBase.grabberOpen();
-        robotBase.driveStraight(6, 180);
-        robotBase.driveStraight(6, 180, -0.5);
-        robotBase.driveStraight(7, 180);
-        robotBase.driveStraight(6, 180, -0.5);
         robotBase.driveStraight(8, 180);
         robotBase.driveStraight(3.5, 180, -0.5);
     }
