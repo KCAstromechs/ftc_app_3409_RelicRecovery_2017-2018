@@ -593,10 +593,10 @@ public class RobotBaseScorpius implements SensorEventListener{
             }
 
             //Put the power on and hit pause for a second
-            motorFrontRight.setPower(-frontPower);
+            motorFrontRight.setPower(frontPower);
             motorFrontLeft.setPower(frontPower);
             motorBackLeft.setPower(-backPower);
-            motorBackRight.setPower(backPower);
+            motorBackRight.setPower(-backPower);
 
             Thread.yield();
         }

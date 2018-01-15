@@ -4,27 +4,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-@Autonomous(name="AutoBlueFront", group="Scorpius")
-public class ScorpiusAutoBlueFront extends LinearOpMode {
-
-    RobotBaseScorpius robotBase;
+public class ScorpiusAutoRedBack extends LinearOpMode {
 
     private RelativeLayout squaresOverlay = null;
     private AppUtil appUtil = AppUtil.getInstance();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robotBase = new RobotBaseScorpius();
+
+        //initialize all bot stuff
+        RobotBaseScorpius robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
 
+        //initialize green square for lineup
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -37,6 +34,9 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
 
         waitForStart();
 
+        robotBase.hasBeenZeroed=false;
+
+        //get rid of green square
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -47,44 +47,22 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
             }
         });
 
-        robotBase.vision(0, 705); //TODO tune values
+        //look at jewel and pictograph
+        robotBase.vision(475, 480);
+
+        //knock off correct jewel
+        sleep(500);
         switch (RobotBaseScorpius.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
-                telemetry.addLine("Jewel Blue Red");
+                robotBase.turn(350);
                 break;
             case RobotBaseScorpius.JEWEL_RED_BLUE:
-                telemetry.addLine("Jewel Red Blue");
-                break;
-            case RobotBaseScorpius.JEWEL_UNKNOWN:
-                telemetry.addLine("Jewel Unknown");
+                robotBase.turn(10);
                 break;
         }
-        robotBase.slapJewel(true);
-        Thread.sleep(2000);
 
-
-        telemetry.update();
-        /*
-        switch (robotBase.pictoPosition) {
-            case LEFT:
-                robotBase.driveStraight(28, 0);
-                break;
-            case UNKNOWN:
-            case CENTER:
-                robotBase.driveStraight(36, 0);
-                break;
-            case RIGHT:
-                robotBase.driveStraight(44, 0);
-                break;
-        }
-        robotBase.turn(90);
-        robotBase.driveStraight(9, 90, -0.6);
-        robotBase.extendGlyphter();
-        sleep(750);
-        robotBase.retractGlyphter();
-        sleep(750);
-        robotBase.driveStraight(9, 90);
-        robotBase.driveStraight(12, 90, -0.6);
-        */
-        }
+        robotBase.driveStraight(30, 0);
+        robotBase.strafe(12, 0);
+        robotBase.driveStraight(6, 180);
+    }
 }
