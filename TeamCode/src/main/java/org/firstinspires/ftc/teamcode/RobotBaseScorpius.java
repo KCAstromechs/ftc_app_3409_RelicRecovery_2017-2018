@@ -130,7 +130,7 @@ public class RobotBaseScorpius implements SensorEventListener{
 
         //sets all initial servo values
         servoSlapperVertical.setPosition(0.875);
-        servoSlapperHorizontal.setPosition(0.35);
+        servoSlapperHorizontal.setPosition(0.37);
         //TODO put grabber servos in
 
         //Accessing gyro and accelerometer from Android
@@ -196,8 +196,11 @@ public class RobotBaseScorpius implements SensorEventListener{
         }
     }
 
-    protected void slapJewel (boolean forward) {
-        servoSlapperHorizontal.setPosition(0.1);
+    protected void slapJewel (boolean forward) throws InterruptedException {
+        servoSlapperHorizontal.setPosition(0.2);
+        Thread.sleep(800);
+        servoSlapperVertical.setPosition(0.4);
+
     }
 
     protected void vision(int startXpx, int startYpx) throws InterruptedException {
@@ -234,14 +237,14 @@ public class RobotBaseScorpius implements SensorEventListener{
         System.out.println("timestamp before processing loop");
         callingOpMode.telemetry.addData("timestamp ", "before processing image");
         callingOpMode.telemetry.update();
-        for (int i = startXpx; i < startXpx + 245; i++) {
+        for (int i = startXpx; i < startXpx + 270; i++) {
 
 //            System.out.println("loop #" + i);
             //If the bot stops you should really stop.
             if(Thread.interrupted()) break;
 
             //Loop through a certain number of rows to cover a certain area of the image
-            for (int j = startYpx; j < startYpx + 275; j++) { //925, 935
+            for (int j = startYpx; j < startYpx + 300; j++) { //925, 935
 
                 //Take the RGB vals of current pix
                 thisR = px.get(i * w * 3 + (j * 3)) & 0xFF;

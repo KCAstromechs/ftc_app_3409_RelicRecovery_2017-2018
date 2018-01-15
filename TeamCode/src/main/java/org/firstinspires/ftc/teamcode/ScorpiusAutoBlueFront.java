@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-@Disabled
 @Autonomous(name="AutoBlueFront", group="Scorpius")
 public class ScorpiusAutoBlueFront extends LinearOpMode {
 
@@ -23,8 +23,7 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
-        telemetry.addLine("SELECT PICTOGRAPH VALUE:");
-        telemetry.update();
+        robotBase.initVuforia();
 
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
@@ -48,13 +47,24 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
             }
         });
 
-        robotBase.vision(475, 480); //TODO tune values
+        robotBase.vision(0, 705); //TODO tune values
         switch (robotBase.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
-
-
+                telemetry.addLine("Jewel Blue Red");
+                break;
+            case RobotBaseS.JEWEL_RED_BLUE:
+                telemetry.addLine("Jewel Red Blue");
+                break;
+            case RobotBaseS.JEWEL_UNKNOWN:
+                telemetry.addLine("Jewel Unknown");
+                break;
         }
+        robotBase.slapJewel(true);
+        Thread.sleep(2000);
 
+
+        telemetry.update();
+        /*
         switch (robotBase.pictoPosition) {
             case LEFT:
                 robotBase.driveStraight(28, 0);
@@ -75,5 +85,6 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         sleep(750);
         robotBase.driveStraight(9, 90);
         robotBase.driveStraight(12, 90, -0.6);
+        */
         }
 }
