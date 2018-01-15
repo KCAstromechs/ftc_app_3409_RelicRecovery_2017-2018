@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @SuppressWarnings("WeakerAccess")
-@TeleOp(name="Teleop", group = "test")
-public class Teleop extends OpMode {
+@TeleOp(name="TeleopM1ttens", group = "Teleop")
+public class TeleopM1ttens extends OpMode {
 
     DcMotor motorRight;
     DcMotor motorLeft;

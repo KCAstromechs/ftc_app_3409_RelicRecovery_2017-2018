@@ -35,6 +35,7 @@ import java.util.Date;
 
 import static android.content.Context.SENSOR_SERVICE;
 
+@SuppressWarnings("WeakerAccess")
 public class RobotBaseM1ttens implements SensorEventListener {
 
     private DcMotor motorLeft, motorRight, motorLifter;
@@ -342,12 +343,8 @@ public class RobotBaseM1ttens implements SensorEventListener {
 
     protected void vision(int startXpx, int startYpx) throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
-        int xRedAvg = 0;                            //Average X position of red pixels to help find red side location
-        int xBlueAvg = 0;                           //Average X position of blue pixels to help find blue side location
         int totalBlue = 1;                          //Total number of blue pixels to help find blue side location
         int totalRed = 1;                           //Total number of red pixels to help find red side location
-        int xRedSum = 0;                            //Added-up X pos of red pixels to find red side location
-        int xBlueSum = 0;                           //Added-up X pos of blue pix to find blue side location
         int idx = 0;                                //Ensures we get correct image type from Vuforia
         float thisS;
         float minRGB, maxRGB;
@@ -406,10 +403,8 @@ public class RobotBaseM1ttens implements SensorEventListener {
                     isBlue = thisB - thisR > 0;
                     if (isBlue) {
                         totalBlue++;
-                        xBlueSum += i;
-                    } else if (!isBlue) {
+                    } else {
                         totalRed++;
-                        xRedSum += i;
                     }
                 }
             }
@@ -467,9 +462,6 @@ public class RobotBaseM1ttens implements SensorEventListener {
         System.out.println("timestamp after save pic");
         callingOpMode.telemetry.addData("timestamp ", "after save pic");
         callingOpMode.telemetry.update();
-        //Find the averages
-        xRedAvg = xRedSum / totalRed;
-        xBlueAvg = xBlueSum / totalBlue;
 
 
         /*THIS BLOCK OF CODE IS FOR WHEN TWO JEWELS ARE IN SIGHT*/
@@ -519,10 +511,10 @@ public class RobotBaseM1ttens implements SensorEventListener {
         //Normalize zRotation to be used
         zRotation = normalize360(rawGyro - zero);
 
-        if(sensorDataCounter % 100 == 0) {
+        /*if(sensorDataCounter % 100 == 0) {
             //callingOpMode.telemetry.addData("zRotation: ", zRotation);
             //callingOpMode.telemetry.update();
-        }
+        }*/
         /*isStopped = ((LinearOpMode)callingOpMode).isStopRequested();
         if (isStopped) {
             mSensorManager.unregisterListener(this);
