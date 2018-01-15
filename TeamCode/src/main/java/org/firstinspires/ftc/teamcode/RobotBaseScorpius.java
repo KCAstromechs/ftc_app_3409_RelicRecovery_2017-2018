@@ -88,7 +88,7 @@ public class RobotBaseScorpius implements SensorEventListener{
     final double slapperVertical_INITIAL = 0.875;
     final double slapperHorizontal_INITIAL = 0.37;
 
-    final double slapperHorizontal_READY = 0.19;
+    final double slapperHorizontal_READY = 0.195;
     final double slapperVertical_READY = 0.4;
 
     final double slapperHorizontal_FORWARD = 0.1;
