@@ -6,11 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-/**
- * Created by N2Class1 on 12/31/2017.
- */
-@TeleOp(name="RobotS_TeleOp")
-public class TeleopS extends OpMode {
+@SuppressWarnings("WeakerAccess")
+@TeleOp(name="TeleopScorpius")
+public class TeleopScorpius extends OpMode {
 
     //motor declaration
     DcMotor motorFrontLeft;
@@ -20,8 +18,7 @@ public class TeleopS extends OpMode {
     DcMotor motorScoop;
     DcMotor motorLifter;
     Servo servoGrabberLeft, servoGrabberRight;
-    private Servo servoSlapperHorizontal, servoSlapperVertical;
-
+    Servo servoSlapperHorizontal, servoSlapperVertical;
 
 
     //variables to be used in manipulating motor power

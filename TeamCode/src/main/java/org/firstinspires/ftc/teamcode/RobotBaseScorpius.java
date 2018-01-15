@@ -32,11 +32,8 @@ import java.util.Date;
 
 import static android.content.Context.SENSOR_SERVICE;
 
-/**
- * Created by N2Class1 on 1/10/2018.
- */
-
-public class RobotBaseS implements SensorEventListener{
+@SuppressWarnings("WeakerAccess")
+public class RobotBaseScorpius implements SensorEventListener{
     private DcMotor motorFrontRight, motorFrontLeft, motorBackLeft, encoderMotor, motorBackRight, motorLifter, motorScoop;
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
@@ -50,9 +47,6 @@ public class RobotBaseS implements SensorEventListener{
     //encoder ticks per one inch
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV) / (WHEEL_DIAMETER_INCHES * Math.PI * DRIVE_GEAR_REDUCTION);
 
-
-    private static final double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-            0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
 
     //sets variables for vision
     private VuforiaLocalizer vuforia;
@@ -208,12 +202,8 @@ public class RobotBaseS implements SensorEventListener{
 
     protected void vision(int startXpx, int startYpx) throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
-        int xRedAvg = 0;                            //Average X position of red pixels to help find red side location
-        int xBlueAvg = 0;                           //Average X position of blue pixels to help find blue side location
         int totalBlue = 1;                          //Total number of blue pixels to help find blue side location
         int totalRed = 1;                           //Total number of red pixels to help find red side location
-        int xRedSum = 0;                            //Added-up X pos of red pixels to find red side location
-        int xBlueSum = 0;                           //Added-up X pos of blue pix to find blue side location
         int idx = 0;                                //Ensures we get correct image type from Vuforia
         float thisS;
         float minRGB, maxRGB;
@@ -272,10 +262,8 @@ public class RobotBaseS implements SensorEventListener{
                     isBlue = thisB - thisR > 0;
                     if (isBlue) {
                         totalBlue++;
-                        xBlueSum += i;
                     } else if (!isBlue) {
                         totalRed++;
-                        xRedSum += i;
                     }
                 }
             }
@@ -333,9 +321,6 @@ public class RobotBaseS implements SensorEventListener{
         System.out.println("timestamp after save pic");
         callingOpMode.telemetry.addData("timestamp ", "after save pic");
         callingOpMode.telemetry.update();
-        //Find the averages
-        xRedAvg = xRedSum / totalRed;
-        xBlueAvg = xBlueSum / totalBlue;
 
 
         /*THIS BLOCK OF CODE IS FOR WHEN TWO JEWELS ARE IN SIGHT*/
@@ -373,7 +358,8 @@ public class RobotBaseS implements SensorEventListener{
 
     /**
      * Tells the robot to drive forward at a certain heading for a specified distance
-     * @param inches number of inches we ask the robot to drive, only posative numbers     * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
+     * @param inches number of inches we ask the robot to drive, only posative numbers
+     * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
      * @param power amount of power given to motors, does not affect distance driven, absolute value from 0 to 1
      */
     protected void driveStraight(double inches, float heading, double power) throws InterruptedException {
@@ -539,6 +525,87 @@ public class RobotBaseS implements SensorEventListener{
         Thread.sleep(500);
     }
 
+    protected void strafe(double inches, float heading) throws InterruptedException { strafe(inches, heading, driveSpeed); }
+
+    /**
+     * Tells the robot to strafe at a certain heading for a specified distance
+     * @param inches number of inches we ask the robot to drive, only posative numbers
+     * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
+     * @param power amount of power given to motors, does not affect distance driven; positive goes left, negative goes right
+     */
+    protected void strafe(double inches, float heading, double power) throws InterruptedException {
+        int target = (int) (inches * COUNTS_PER_INCH);          //translates the number of inches to be driven into encoder ticks
+        double error;                                           //The number of degrees between the true heading and desired heading
+        double correction;                                      //Modifies power to account for error
+        double frontPower;                                      //Power being fed to front side of bot
+        double backPower;                                       //Power being fed to back side of bot
+        double max;                                             //To be used to keep powers from exceeding 1
+
+        heading = (int) normalize360(heading);
+
+        //Ensure that motors are set up correctly to drive
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //Clip the input power to keep it from exceeding 1 & -1
+        power = Range.clip(power, -1.0, 1.0);
+
+        //Set drive motors to initial input power
+        motorFrontRight.setPower(-power);
+        motorFrontLeft.setPower(power);
+        motorBackLeft.setPower(-power);
+        motorBackRight.setPower(power);
+
+        //TODO determine whether an thread.interrupted or the isStopRequested method
+
+        //Begin to correct for heading error
+        //While: we have not driven correct distance & bot is not stopped
+        while (Math.abs(encoderMotor.getCurrentPosition()) < Math.abs(target) && !Thread.interrupted()) {
+            error = heading - zRotation;
+
+            //Modify error onto the -180-180 range
+            while (error > 180) error = (error - 360);
+            while (error <= -180) error = (error + 360);
+
+            //Determine how much correction to be placed on each side of robot based on error
+            correction = Range.clip(error * P_DRIVE_COEFF, -1, 1);
+
+            //Incorporate our correction for our heading into the power
+            frontPower = power + correction;
+            backPower = power - correction;
+
+            //Take the larger of the two powers
+            max = Math.max(Math.abs(frontPower), Math.abs(backPower));
+            //If the largest power is too big, divide them both by it.
+            if (max > 1.0) {
+                frontPower /= max;
+                backPower /= max;
+            }
+
+            //Put the power on and hit pause for a second
+            motorFrontRight.setPower(-frontPower);
+            motorFrontLeft.setPower(frontPower);
+            motorBackLeft.setPower(-backPower);
+            motorBackRight.setPower(backPower);
+
+            Thread.yield();
+        }
+
+        //When the drive is finished, it is time to turn off the drive motors
+        motorFrontRight.setPower(0);
+        motorFrontLeft.setPower(0);
+        motorBackLeft.setPower(0);
+        motorBackRight.setPower(0);
+        Thread.sleep(500);
+    }
+
 
     private float normalize360(float val) {
         while (val > 360 || val < 0) {
@@ -571,10 +638,11 @@ public class RobotBaseS implements SensorEventListener{
         //Normalize zRotation to be used
         zRotation = normalize360(rawGyro - zero);
 
+        /*
         if(sensorDataCounter % 100 == 0) {
             //callingOpMode.telemetry.addData("zRotation: ", zRotation);
             //callingOpMode.telemetry.update();
-        }
+        }*/
     }
 
     @Override

@@ -7,22 +7,21 @@ import android.widget.RelativeLayout;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @Disabled
-@Autonomous(name="RobotS_AutoBlueFront", group="RobotS")
-public class RobotSAutoBlueFront extends LinearOpMode {
+@Autonomous(name="AutoBlueFront", group="Scorpius")
+public class ScorpiusAutoBlueFront extends LinearOpMode {
 
-    RobotBaseS robotBase;
+    RobotBaseScorpius robotBase;
 
     private RelativeLayout squaresOverlay = null;
     private AppUtil appUtil = AppUtil.getInstance();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robotBase = new RobotBaseS();
+        robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         telemetry.addLine("SELECT PICTOGRAPH VALUE:");
         telemetry.update();
@@ -51,7 +50,7 @@ public class RobotSAutoBlueFront extends LinearOpMode {
 
         robotBase.vision(475, 480); //TODO tune values
         switch (robotBase.jewelPosition) {
-            case RobotBaseS.JEWEL_BLUE_RED:
+            case RobotBaseScorpius.JEWEL_BLUE_RED:
 
 
         }

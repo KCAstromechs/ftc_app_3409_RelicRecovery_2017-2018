@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Disabled
-@TeleOp(name="Rusty Drive", group="test")
+@TeleOp(name="TeleopRusty", group="Teleop")
 public class TeleopRusty extends OpMode {
 
     DcMotor motorFrontLeft, motorFrontRight, motorBackLeft, motorBackRight;
