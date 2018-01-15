@@ -51,21 +51,21 @@ public class RobotSAutoBlueFront extends LinearOpMode {
         robotBase.vision(0, 705); //TODO tune values
         switch (robotBase.jewelPosition) {
             case RobotBaseS.JEWEL_BLUE_RED:
+                robotBase.slapJewel(true);
                 telemetry.addLine("Jewel Blue Red");
                 break;
             case RobotBaseS.JEWEL_RED_BLUE:
+                robotBase.slapJewel(false);
                 telemetry.addLine("Jewel Red Blue");
                 break;
             case RobotBaseS.JEWEL_UNKNOWN:
                 telemetry.addLine("Jewel Unknown");
                 break;
         }
-        robotBase.slapJewel(true);
         Thread.sleep(2000);
 
 
         telemetry.update();
-        /*
         switch (robotBase.pictoPosition) {
             case LEFT:
                 robotBase.driveStraight(28, 0);
@@ -75,17 +75,16 @@ public class RobotSAutoBlueFront extends LinearOpMode {
                 robotBase.driveStraight(36, 0);
                 break;
             case RIGHT:
-                robotBase.driveStraight(44, 0);
+                robotBase.driveStraight(50, 0);
                 break;
         }
         robotBase.turn(90);
-        robotBase.driveStraight(9, 90, -0.6);
         robotBase.extendGlyphter();
         sleep(750);
         robotBase.retractGlyphter();
         sleep(750);
-        robotBase.driveStraight(9, 90);
-        robotBase.driveStraight(12, 90, -0.6);
-        */
+        robotBase.driveStraight(6, 90, -0.6);
+        robotBase.driveStraight(6, 90);
+        robotBase.driveStraight(9, 90, -0.6);
         }
 }

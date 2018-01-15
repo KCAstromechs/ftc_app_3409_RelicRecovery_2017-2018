@@ -85,12 +85,20 @@ public class RobotBaseS implements SensorEventListener{
     // 0 is set as straight ahead of the robot, 90 is the right, 270 is to the left
     private float zRotation;
 
-    private static final double P_DRIVE_COEFF = 0.01;           // Larger is more responsive, but also less stable
+    private static final double P_DRIVE_COEFF = 0.013;           // Larger is more responsive, but also less stable
     private static final double P_TURN_COEFF = 0.018;           // Larger is more responsive, but also less stable
 
     protected static final double driveSpeed = 0.6;
     protected static final double turnSpeed = 0.4;
 
+    final double slapperVertical_INITIAL = 0.875;
+    final double slapperHorizontal_INITIAL = 0.37;
+
+    final double slapperHorizontal_READY = 0.19;
+    final double slapperVertical_READY = 0.4;
+
+    final double slapperHorizontal_FORWARD = 0.1;
+    final double slapperHorizontal_BACKWARD = 0.28;
 
 
     protected void init(OpMode _callingOpMode, HardwareMap _hardwareMap) {
@@ -203,9 +211,20 @@ public class RobotBaseS implements SensorEventListener{
     }
 
     protected void slapJewel (boolean forward) throws InterruptedException {
-        servoSlapperHorizontal.setPosition(0.2);
+        servoSlapperHorizontal.setPosition(slapperHorizontal_READY);
         Thread.sleep(800);
-        servoSlapperVertical.setPosition(0.4);
+        servoSlapperVertical.setPosition(slapperVertical_READY);
+        Thread.sleep(1000);
+        if(forward) {
+            servoSlapperHorizontal.setPosition(slapperHorizontal_FORWARD);
+        }
+        else {
+            servoSlapperHorizontal.setPosition(slapperHorizontal_BACKWARD);
+        }
+        Thread.sleep(800);
+        servoSlapperVertical.setPosition(slapperVertical_INITIAL);
+        Thread.sleep(200);
+        servoSlapperHorizontal.setPosition(slapperHorizontal_INITIAL);
 
     }
 
