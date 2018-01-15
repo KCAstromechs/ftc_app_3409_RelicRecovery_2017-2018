@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-@Autonomous(name="AutoBlueFront", group="Scorpius")
-public class ScorpiusAutoBlueFront extends LinearOpMode {
+@Autonomous(name="AutoRedFront", group="Scorpius")
+public class ScorpiusAutoRedFront extends LinearOpMode {
 
     RobotBaseScorpius robotBase;
 
@@ -37,8 +37,6 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
 
         waitForStart();
 
-        robotBase.hasBeenZeroed = false;
-
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -50,13 +48,13 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         });
 
         robotBase.vision(0, 705); //TODO tune values
-        switch (RobotBaseScorpius.jewelPosition) {
+        switch (robotBase.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
-                robotBase.slapJewel(true);
+                robotBase.slapJewel(false);
                 telemetry.addLine("Jewel Blue Red");
                 break;
             case RobotBaseScorpius.JEWEL_RED_BLUE:
-                robotBase.slapJewel(false);
+                robotBase.slapJewel(true);
                 telemetry.addLine("Jewel Red Blue");
                 break;
             case RobotBaseScorpius.JEWEL_UNKNOWN:
@@ -69,23 +67,16 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         telemetry.update();
         switch (robotBase.pictoPosition) {
             case LEFT:
-                robotBase.driveStraight(28, 0);
-                telemetry.addLine("Left");
+                robotBase.driveStraight(44, 180, -0.6);
                 break;
             case UNKNOWN:
-                telemetry.addLine("Unknown");
             case CENTER:
-                robotBase.driveStraight(36, 0);
-                telemetry.addLine("Center");
+                robotBase.driveStraight(36, 180, -0.6);
                 break;
             case RIGHT:
-                robotBase.driveStraight(44, 0);
-                telemetry.addLine("Right");
+                robotBase.driveStraight(28, 180, -0.6);
                 break;
         }
-
-        telemetry.update();
-
         robotBase.turn(70);
         robotBase.turn(90, 0.25);
         robotBase.extendGlyphter();
@@ -95,9 +86,5 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         robotBase.driveStraight(6, 90, -0.6);
         robotBase.driveStraight(6, 90);
         robotBase.driveStraight(9, 90, -0.6);
-        robotBase.driveStraight(6, 90
-
-
-        );
-        }
+    }
 }
