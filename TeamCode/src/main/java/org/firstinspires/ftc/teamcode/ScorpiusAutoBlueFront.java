@@ -5,10 +5,8 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @Autonomous(name="AutoBlueFront", group="Scorpius")
@@ -67,7 +65,7 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
 
 
         telemetry.update();
-        switch (robotBase.pictoPosition) {
+        switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
                 robotBase.driveStraight(28, 0);
                 telemetry.addLine("Left");

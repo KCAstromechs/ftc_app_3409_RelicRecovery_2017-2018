@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-@Autonomous (name="AutoRedBack", group = "Scorpius")
-public class ScorpiusAutoRedBack extends LinearOpMode {
+@Autonomous (name="AutoBlueBack", group = "Scorpius")
+public class ScorpiusAutoBlueBack extends LinearOpMode {
 
     private RelativeLayout squaresOverlay = null;
     private AppUtil appUtil = AppUtil.getInstance();
@@ -48,9 +48,10 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
                 squaresOverlay = null;
             }
         });
-        robotBase.driveStraight(24, 0, -0.6);
-        robotBase.strafe(20, 0);
+        robotBase.driveStraight(30, 0);
+        robotBase.strafe(12, 0);
+        robotBase.turn(180);
         robotBase.extendGlyphter();
-        robotBase.driveStraight(4, 0, -0.6);
+        robotBase.driveStraight(4, 180, -0.6);
     }
 }
