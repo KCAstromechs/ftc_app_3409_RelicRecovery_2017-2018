@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
+import com.vuforia.CameraDevice;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
@@ -161,6 +162,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         relicTemplate = relicTrackables.get(0);
         relicTrackables.activate();
+        CameraDevice.getInstance().setFlashTorchMode(true);
     }
 
     /**
@@ -169,7 +171,7 @@ public class RobotBaseScorpius implements SensorEventListener{
      */
     protected void extendGlyphter () throws InterruptedException {
         //the distance that the motor is ran before the springs take over
-        int encoderDist = 400;
+        int encoderDist = 800;
         //change in encoder clicks per loop
         int speed;
         int lastPos = 0;
@@ -191,17 +193,19 @@ public class RobotBaseScorpius implements SensorEventListener{
             lastPos = Math.abs(motorLifter.getCurrentPosition());
             Thread.sleep(10);
         }
+        motorLifter.setPower(0);
     }
-    protected void retractGlyphter () {
-        int encoderDist = 400;
+    protected void retractGlyphter () throws InterruptedException{
+        int encoderDist = 800;
 
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorLifter.setPower(-0.5);
         while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(encoderDist)) {
-
+            Thread.sleep(10);
         }
+        motorLifter.setPower(0);
     }
 
     protected void slapJewel (boolean forward) throws InterruptedException {
@@ -299,6 +303,8 @@ public class RobotBaseScorpius implements SensorEventListener{
         //now grab the pictograph information since it's had time to set up, and shut it down
         pictoPosition = RelicRecoveryVuMark.from(relicTemplate);
         relicTrackables.deactivate();
+
+        CameraDevice.getInstance().setFlashTorchMode(false);
 
         //save picture block
         boolean bSavePicture = false;
