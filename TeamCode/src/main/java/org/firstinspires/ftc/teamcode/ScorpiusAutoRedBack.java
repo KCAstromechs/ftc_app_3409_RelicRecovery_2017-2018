@@ -35,7 +35,6 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
         });
 
         waitForStart();
-
         robotBase.hasBeenZeroed=false;
 
         //get rid of green square
@@ -48,9 +47,36 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
                 squaresOverlay = null;
             }
         });
+
+        robotBase.vision(450, 720); //TODO tune values
+        switch (RobotBaseScorpius.jewelPosition) {
+            case RobotBaseScorpius.JEWEL_BLUE_RED:
+                robotBase.slapJewel(true);
+                break;
+            case RobotBaseScorpius.JEWEL_RED_BLUE:
+                robotBase.slapJewel(false);
+                break;
+        }
+        Thread.sleep(2000);
+
         robotBase.driveStraight(24, 0, -0.6);
-        robotBase.strafe(20, 0);
+        switch (RobotBaseScorpius.pictoPosition) {
+            case LEFT:
+                robotBase.strafe(21, 0);
+                break;
+            case CENTER:
+                robotBase.strafe(12, 0);
+                break;
+            case RIGHT:
+                robotBase.strafe(5, 0);
+                break;
+            case UNKNOWN:
+                robotBase.strafe(12, 0);
+                break;
+        }
         robotBase.extendGlyphter();
+        sleep(1000);
+        robotBase.retractGlyphter();
         robotBase.driveStraight(4, 0, -0.6);
     }
 }
