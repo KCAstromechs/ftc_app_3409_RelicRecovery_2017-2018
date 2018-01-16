@@ -171,7 +171,7 @@ public class RobotBaseScorpius implements SensorEventListener{
      */
     protected void extendGlyphter () throws InterruptedException {
         //the distance that the motor is ran before the springs take over
-        int encoderDist = 400;
+        int encoderDist = 800;
         //change in encoder clicks per loop
         int speed;
         int lastPos = 0;
@@ -193,17 +193,19 @@ public class RobotBaseScorpius implements SensorEventListener{
             lastPos = Math.abs(motorLifter.getCurrentPosition());
             Thread.sleep(10);
         }
+        motorLifter.setPower(0);
     }
-    protected void retractGlyphter () {
-        int encoderDist = 400;
+    protected void retractGlyphter () throws InterruptedException{
+        int encoderDist = 800;
 
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorLifter.setPower(-0.5);
         while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(encoderDist)) {
-
+            Thread.sleep(10);
         }
+        motorLifter.setPower(0);
     }
 
     protected void slapJewel (boolean forward) throws InterruptedException {

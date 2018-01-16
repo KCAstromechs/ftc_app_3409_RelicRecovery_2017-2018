@@ -47,7 +47,7 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
             }
         });
 
-        robotBase.vision(0, 705); //TODO tune values
+        robotBase.vision(450, 720); //TODO tune values
         switch (robotBase.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
                 robotBase.slapJewel(false);
@@ -80,7 +80,7 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
         robotBase.turn(70);
         robotBase.turn(90, 0.25);
         robotBase.extendGlyphter();
-        sleep(750);
+        sleep(1000);
         robotBase.retractGlyphter();
         sleep(750);
         robotBase.driveStraight(6, 90, -0.6);

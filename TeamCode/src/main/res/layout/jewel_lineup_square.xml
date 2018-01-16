@@ -6,7 +6,7 @@
     <View android:id="@+id/left_jewel"
         android:background="@drawable/green_square"
         android:layout_marginTop="1220px"
-        android:layout_marginLeft="375px"
+        android:layout_marginLeft="180px"
         android:layout_width="270px"
         android:layout_height="300px"
         android:visibility="invisible"
