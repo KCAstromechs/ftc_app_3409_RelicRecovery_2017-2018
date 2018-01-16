@@ -283,15 +283,15 @@ public class RobotBaseScorpius implements SensorEventListener{
                 //System.out.println("Saturation: " + thisS);
 
                 //We now have the colors (one byte each) for any pixel, (j, i) so we can add to the totals
-                if (thisS >= 0.95) {
+//                if (thisS >= 0.95) {
                     //                  System.out.println("Jewel pixel found");
                     isBlue = thisB - thisR > 0;
                     if (isBlue) {
                         totalBlue++;
-                    } else if (!isBlue) {
+                    } else {
                         totalRed++;
                     }
-                }
+//                }
             }
         }
 
