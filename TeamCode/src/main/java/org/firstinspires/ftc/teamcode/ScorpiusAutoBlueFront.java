@@ -61,10 +61,10 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
                 telemetry.addLine("Jewel Unknown");
                 break;
         }
-        Thread.sleep(2000);
-
-
         telemetry.update();
+
+        Thread.sleep(3000);
+
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
                 robotBase.driveStraight(28, 0);
@@ -93,9 +93,6 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         robotBase.driveStraight(6, 90, -0.6);
         robotBase.driveStraight(6, 90);
         robotBase.driveStraight(9, 90, -0.6);
-        robotBase.driveStraight(6, 90
-
-
-        );
+        robotBase.driveStraight(6, 90);
         }
 }

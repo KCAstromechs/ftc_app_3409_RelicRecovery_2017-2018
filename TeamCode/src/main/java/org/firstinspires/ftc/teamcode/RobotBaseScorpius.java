@@ -283,7 +283,7 @@ public class RobotBaseScorpius implements SensorEventListener{
                 //System.out.println("Saturation: " + thisS);
 
                 //We now have the colors (one byte each) for any pixel, (j, i) so we can add to the totals
-//                if (thisS >= 0.95) {
+                //if (thisS >= 0.85) {
                     //                  System.out.println("Jewel pixel found");
                     isBlue = thisB - thisR > 0;
                     if (isBlue) {
@@ -291,7 +291,7 @@ public class RobotBaseScorpius implements SensorEventListener{
                     } else {
                         totalRed++;
                     }
-//                }
+                //}
             }
         }
 
@@ -363,6 +363,8 @@ public class RobotBaseScorpius implements SensorEventListener{
             jewelPosition = JEWEL_UNKNOWN;
         }*/
 
+        callingOpMode.telemetry.addData("totalBlue: ", totalBlue);
+        callingOpMode.telemetry.addData("totalRed: ", totalRed);
         if(totalBlue > totalRed) {
             jewelPosition = JEWEL_BLUE_RED;
         }
