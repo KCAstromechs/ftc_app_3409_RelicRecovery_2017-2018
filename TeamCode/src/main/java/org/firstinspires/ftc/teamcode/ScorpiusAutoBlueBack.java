@@ -48,10 +48,36 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
                 squaresOverlay = null;
             }
         });
-        robotBase.driveStraight(30, 0);
-        robotBase.strafe(12, 0);
+        robotBase.vision(450, 720); //TODO tune values
+        switch (RobotBaseScorpius.jewelPosition) {
+            case RobotBaseScorpius.JEWEL_BLUE_RED:
+                robotBase.slapJewel(true);
+                break;
+            case RobotBaseScorpius.JEWEL_RED_BLUE:
+                robotBase.slapJewel(false);
+                break;
+        }
+        Thread.sleep(2000);
+
+        robotBase.driveStraight(24, 0);
+        switch (RobotBaseScorpius.pictoPosition) {
+            case LEFT:
+                robotBase.strafe(5, 0);
+                break;
+            case CENTER:
+                robotBase.strafe(12, 0);
+                break;
+            case RIGHT:
+                robotBase.strafe(21, 0);
+                break;
+            case UNKNOWN:
+                robotBase.strafe(12, 0);
+                break;
+        }
         robotBase.turn(180);
         robotBase.extendGlyphter();
+        sleep(1000);
+        robotBase.retractGlyphter();
         robotBase.driveStraight(4, 180, -0.6);
     }
 }
