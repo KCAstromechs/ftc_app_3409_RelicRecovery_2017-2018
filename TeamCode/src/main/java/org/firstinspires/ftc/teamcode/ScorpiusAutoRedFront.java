@@ -47,6 +47,8 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
             }
         });
 
+
+        Thread.sleep(1000);
         robotBase.vision(450, 720);
         switch (robotBase.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
@@ -61,20 +63,20 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
                 telemetry.addLine("Jewel Unknown");
                 break;
         }
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
 
         telemetry.update();
         switch (robotBase.pictoPosition) {
             case LEFT:
-                robotBase.driveStraight(44, 180, -0.6);
+                robotBase.driveStraight(44, 0, -0.6);
                 break;
             case UNKNOWN:
             case CENTER:
-                robotBase.driveStraight(36, 180, -0.6);
+                robotBase.driveStraight(36, 0, -0.6);
                 break;
             case RIGHT:
-                robotBase.driveStraight(28, 180, -0.6);
+                robotBase.driveStraight(28, 0, -0.6);
                 break;
         }
         robotBase.turn(70);
