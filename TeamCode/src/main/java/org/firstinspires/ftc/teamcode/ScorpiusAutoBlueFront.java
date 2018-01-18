@@ -51,48 +51,34 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         switch (RobotBaseScorpius.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
                 robotBase.slapJewel(true);
-                telemetry.addLine("Jewel Blue Red");
                 break;
             case RobotBaseScorpius.JEWEL_RED_BLUE:
                 robotBase.slapJewel(false);
-                telemetry.addLine("Jewel Red Blue");
-                break;
-            case RobotBaseScorpius.JEWEL_UNKNOWN:
-                telemetry.addLine("Jewel Unknown");
                 break;
         }
-        telemetry.update();
-
-        Thread.sleep(3000);
 
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
                 robotBase.driveStraight(28, 0);
-                telemetry.addLine("Left");
                 break;
             case UNKNOWN:
-                telemetry.addLine("Unknown");
             case CENTER:
                 robotBase.driveStraight(36, 0);
-                telemetry.addLine("Center");
                 break;
             case RIGHT:
                 robotBase.driveStraight(44, 0);
-                telemetry.addLine("Right");
                 break;
         }
 
-        telemetry.update();
-
-        robotBase.turn(70);
-        robotBase.turn(90, 0.25);
+        robotBase.turn(70, 0.6);
+        robotBase.turn(90, 0.2);
+        robotBase.driveStraight(3, 90, -0.6);
         robotBase.extendGlyphter();
         sleep(1000);
         robotBase.retractGlyphter();
-        sleep(750);
-        robotBase.driveStraight(6, 90, -0.6);
-        robotBase.driveStraight(6, 90);
+        robotBase.driveStraight(3, 90, -0.6);
+        robotBase.driveStraight(5, 90);
         robotBase.driveStraight(9, 90, -0.6);
-        robotBase.driveStraight(6, 90);
+        robotBase.driveStraight(4, 90);
         }
 }

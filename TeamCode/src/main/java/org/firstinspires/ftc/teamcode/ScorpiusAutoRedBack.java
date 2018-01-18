@@ -51,13 +51,12 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
         robotBase.vision(450, 720); //TODO tune values
         switch (RobotBaseScorpius.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
-                robotBase.slapJewel(true);
-                break;
-            case RobotBaseScorpius.JEWEL_RED_BLUE:
                 robotBase.slapJewel(false);
                 break;
+            case RobotBaseScorpius.JEWEL_RED_BLUE:
+                robotBase.slapJewel(true);
+                break;
         }
-        Thread.sleep(2000);
 
         robotBase.driveStraight(24, 0, -0.6);
         switch (RobotBaseScorpius.pictoPosition) {
@@ -78,5 +77,6 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
         sleep(1000);
         robotBase.retractGlyphter();
         robotBase.driveStraight(4, 0, -0.6);
+        robotBase.driveStraight(3, 180);
     }
 }

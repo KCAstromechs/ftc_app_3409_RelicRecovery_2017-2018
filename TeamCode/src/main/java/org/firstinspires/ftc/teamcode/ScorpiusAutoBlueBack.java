@@ -57,27 +57,28 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
                 robotBase.slapJewel(false);
                 break;
         }
-        Thread.sleep(2000);
 
-        robotBase.driveStraight(24, 0);
+        robotBase.driveStraight(28, 0);
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                robotBase.strafe(5, 0);
+                robotBase.strafe(8, 0);
                 break;
             case CENTER:
-                robotBase.strafe(12, 0);
+                robotBase.strafe(15, 0);
                 break;
             case RIGHT:
-                robotBase.strafe(21, 0);
+                robotBase.strafe(24, 0);
                 break;
             case UNKNOWN:
-                robotBase.strafe(12, 0);
+                robotBase.strafe(15, 0);
                 break;
         }
+        telemetry.update();
         robotBase.turn(180);
         robotBase.extendGlyphter();
         sleep(1000);
         robotBase.retractGlyphter();
-        robotBase.driveStraight(4, 180, -0.6);
+        robotBase.driveStraight(8, 180, -0.6);
+        robotBase.driveStraight(3, 180);
     }
 }

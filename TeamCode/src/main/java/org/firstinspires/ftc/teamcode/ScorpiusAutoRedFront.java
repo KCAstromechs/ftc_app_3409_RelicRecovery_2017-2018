@@ -50,43 +50,36 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
 
         Thread.sleep(1000);
         robotBase.vision(450, 720);
-        switch (robotBase.jewelPosition) {
+        switch (RobotBaseScorpius.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
                 robotBase.slapJewel(false);
-                telemetry.addLine("Jewel Blue Red");
                 break;
             case RobotBaseScorpius.JEWEL_RED_BLUE:
                 robotBase.slapJewel(true);
-                telemetry.addLine("Jewel Red Blue");
-                break;
-            case RobotBaseScorpius.JEWEL_UNKNOWN:
-                telemetry.addLine("Jewel Unknown");
                 break;
         }
-        Thread.sleep(3000);
 
-
-        telemetry.update();
-        switch (robotBase.pictoPosition) {
+        switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                robotBase.driveStraight(44, 0, -0.6);
+                robotBase.driveStraight(41, 0, -0.6);
                 break;
             case UNKNOWN:
             case CENTER:
-                robotBase.driveStraight(36, 0, -0.6);
+                robotBase.driveStraight(33, 0, -0.6);
                 break;
             case RIGHT:
-                robotBase.driveStraight(28, 0, -0.6);
+                robotBase.driveStraight(25, 0, -0.6);
                 break;
         }
-        robotBase.turn(70);
-        robotBase.turn(90, 0.25);
+        robotBase.turn(70, 0.6);
+        robotBase.turn(90, 0.2);
+        robotBase.driveStraight(3, 90, -0.6);
         robotBase.extendGlyphter();
         sleep(1000);
         robotBase.retractGlyphter();
-        sleep(750);
-        robotBase.driveStraight(6, 90, -0.6);
-        robotBase.driveStraight(6, 90);
+        robotBase.driveStraight(3, 90, -0.6);
+        robotBase.driveStraight(5, 90);
         robotBase.driveStraight(9, 90, -0.6);
+        robotBase.driveStraight(4, 90);
     }
 }
