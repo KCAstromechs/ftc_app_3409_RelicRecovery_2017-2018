@@ -45,7 +45,7 @@ public class TeleopScorpius extends OpMode {
         motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         servoSlapperVertical.setPosition(0.875);
-        servoSlapperHorizontal.setPosition(0.35);
+        servoSlapperHorizontal.setPosition(0.37);
 
     }
 
@@ -67,23 +67,19 @@ public class TeleopScorpius extends OpMode {
         }
 
         if (gamepad2.right_bumper) {
-            motorScoop.setPower(0.1);
-        } else if (gamepad2.right_trigger>0.35){
             motorScoop.setPower(-0.1);
+        } else if (gamepad2.right_trigger>0.35){
+            motorScoop.setPower(0.1);
         } else {
             motorScoop.setPower(0);
         }
 
-        if(gamepad2.dpad_left) {
+        if(gamepad2.a) {
             servoGrabberLeft.setPosition(0.81);
-        }
-        if(gamepad2.dpad_right) {
-            servoGrabberLeft.setPosition(0.6);
-        }
-        if(gamepad2.b) {
             servoGrabberRight.setPosition(0.23);
         }
-        if(gamepad2.x) {
+        if(gamepad2.y) {
+            servoGrabberLeft.setPosition(0.6);
             servoGrabberRight.setPosition(0.4);
         }
 
