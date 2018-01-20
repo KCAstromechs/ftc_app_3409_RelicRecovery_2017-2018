@@ -9,21 +9,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-@Autonomous (name="AutoBlueBack", group = "Scorpius")
-public class ScorpiusAutoBlueBack extends LinearOpMode {
+@Autonomous(name="AutoBlueFrontTESTING", group="Scorpius")
+public class ScorpiusAutoBlueFrontTESTING extends LinearOpMode {
+
+    RobotBaseScorpius robotBase;
 
     private RelativeLayout squaresOverlay = null;
     private AppUtil appUtil = AppUtil.getInstance();
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-        //initialize all bot stuff
-        RobotBaseScorpius robotBase = new RobotBaseScorpius();
+        robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
 
-        //initialize green square for lineup
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -36,9 +35,6 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
 
         waitForStart();
 
-        robotBase.hasBeenZeroed=false;
-
-        //get rid of green square
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -58,27 +54,44 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
                 break;
         }
 
-        robotBase.driveStraight(28, 0);
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                robotBase.strafe(8, 0);
-                break;
-            case CENTER:
-                robotBase.strafe(15, 0);
-                break;
-            case RIGHT:
-                robotBase.strafe(24, 0);
+                robotBase.driveStraight(28, 0);
                 break;
             case UNKNOWN:
-                robotBase.strafe(15, 0);
+            case CENTER:
+                robotBase.driveStraight(36, 0);
+                break;
+            case RIGHT:
+                robotBase.driveStraight(44, 0);
                 break;
         }
-        telemetry.update();
-        robotBase.turn(180);
+
+        robotBase.turn(70, 0.6);
+        robotBase.turn(90, 0.2);
+        robotBase.driveStraight(3, 90, -0.6);
         robotBase.extendGlyphter();
         sleep(1000);
         robotBase.retractGlyphter(2000);
-        robotBase.driveStraight(8, 180, -0.6);
-        robotBase.driveStraight(3, 180);
+        robotBase.driveStraight(3, 90, -0.6);
+        robotBase.driveStraight(4, 90);
+        robotBase.lowerGrabby();
+        robotBase.openGrabby();
+        robotBase.driveStraight(22, 90);
+        robotBase.driveStraight(4, 90, 0.3);
+        robotBase.closeGrabby();
+        sleep(500);
+        robotBase.driveStraight(4, 90, -0.6);
+        robotBase.raiseGrabby();
+        robotBase.driveStraight(22, 90, -0.6);
+        robotBase.openGrabby();
+        sleep(500);
+        robotBase.lowerGrabby();
+        robotBase.driveStraight(1, 90, -0.3);
+        robotBase.extendGlyphter();
+        sleep(1000);
+        robotBase.retractGlyphter(1800);
+        robotBase.driveStraight(5, 90, -0.6);
+        robotBase.driveStraight(4, 90);
     }
 }

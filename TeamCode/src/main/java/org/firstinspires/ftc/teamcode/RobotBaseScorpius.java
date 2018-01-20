@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -39,7 +40,7 @@ public class RobotBaseScorpius implements SensorEventListener{
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
 
-    private Servo servoSlapperHorizontal, servoSlapperVertical;
+    private Servo servoSlapperHorizontal, servoSlapperVertical, servoGrabberLeft, servoGrabberRight;
 
     private static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 26.0/32.0;     // Numerator is gear on motor; Denominator is gear on wheel
@@ -111,6 +112,8 @@ public class RobotBaseScorpius implements SensorEventListener{
 
         servoSlapperHorizontal = hardwareMap.servo.get("slapperHorizontal");
         servoSlapperVertical = hardwareMap.servo.get("slapperVertical");
+        servoGrabberLeft = hardwareMap.servo.get("grabberLeft");
+        servoGrabberRight = hardwareMap.servo.get("grabberRight");
 
         //reverses left side so that the robot drives forward when positive power is applied to all drive motors
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -122,6 +125,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Ensures that speed control is turned off
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -129,6 +133,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Brake the motors when power is 0
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -140,7 +145,6 @@ public class RobotBaseScorpius implements SensorEventListener{
         //sets all initial servo values
         servoSlapperVertical.setPosition(0.875);
         servoSlapperHorizontal.setPosition(0.37);
-        //TODO put grabber servos in
 
         //Accessing gyro and accelerometer from Android
         mSensorManager = (SensorManager) hardwareMap.appContext.getSystemService(SENSOR_SERVICE);
@@ -195,17 +199,42 @@ public class RobotBaseScorpius implements SensorEventListener{
         }
         motorLifter.setPower(0);
     }
-    protected void retractGlyphter () throws InterruptedException{
-        int encoderDist = 800;
-
+    protected void retractGlyphter (int i) throws InterruptedException{
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motorLifter.setPower(-0.5);
-        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(encoderDist)) {
+        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(i)) {
             Thread.sleep(10);
         }
         motorLifter.setPower(0);
+    }
+
+    protected void lowerGrabby () throws InterruptedException{
+        motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        motorScoop.setPower(-0.1);
+        while(Math.abs(motorScoop.getCurrentPosition()) < 825) {
+            Thread.sleep(10);
+        }
+        motorScoop.setPower(0);
+    }
+
+    protected void raiseGrabby () throws InterruptedException{
+        motorScoop.setPower(0.1);
+        Thread.sleep(500);
+        motorScoop.setPower(0);
+    }
+
+    protected void closeGrabby () {
+        servoGrabberLeft.setPosition(0.6);
+        servoGrabberRight.setPosition(0.4);
+    }
+
+    protected void openGrabby () {
+        servoGrabberLeft.setPosition(0.81);
+        servoGrabberRight.setPosition(0.23);
     }
 
     protected void slapJewel (boolean forward) throws InterruptedException {

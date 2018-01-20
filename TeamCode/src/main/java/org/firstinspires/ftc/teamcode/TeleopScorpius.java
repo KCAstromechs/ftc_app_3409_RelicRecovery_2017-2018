@@ -47,6 +47,8 @@ public class TeleopScorpius extends OpMode {
         servoSlapperVertical.setPosition(0.875);
         servoSlapperHorizontal.setPosition(0.37);
 
+        servoGrabberLeft.setPosition(0.81);
+        servoGrabberRight.setPosition(0.23);
     }
 
     @Override
@@ -84,7 +86,7 @@ public class TeleopScorpius extends OpMode {
         }
 
         //If you're barely pushing down on the joysticks or the triggers, don't go
-        if (Math.abs(left + leftT + rightT) < 0.3) {
+        if (Math.abs(left) + Math.abs(leftT) + Math.abs(rightT) < 0.1) {
             frontLeftPower = 0;
             backLeftPower = 0;
         }
@@ -97,7 +99,7 @@ public class TeleopScorpius extends OpMode {
         }
 
         //Same as the left side
-        if (Math.abs(right + leftT + rightT) < 0.3) {
+        if (Math.abs(right) + Math.abs(leftT) + Math.abs(rightT) < 0.1) {
             frontRightPower = 0;
             backRightPower = 0;
         }

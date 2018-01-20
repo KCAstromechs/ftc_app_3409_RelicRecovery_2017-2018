@@ -75,7 +75,7 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         robotBase.driveStraight(3, 90, -0.6);
         robotBase.extendGlyphter();
         sleep(1000);
-        robotBase.retractGlyphter();
+        robotBase.retractGlyphter(2000);
         robotBase.driveStraight(3, 90, -0.6);
         robotBase.driveStraight(5, 90);
         robotBase.driveStraight(9, 90, -0.6);

@@ -75,8 +75,8 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
         }
         robotBase.extendGlyphter();
         sleep(1000);
-        robotBase.retractGlyphter();
+        robotBase.retractGlyphter(2000);
         robotBase.driveStraight(4, 0, -0.6);
-        robotBase.driveStraight(3, 180);
+        robotBase.driveStraight(3, 0);
     }
 }
