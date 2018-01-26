@@ -24,6 +24,7 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
         robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
+        robotBase.initGrabby();
 
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
@@ -48,38 +49,38 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
         });
 
 
-        Thread.sleep(1000);
-        robotBase.vision(450, 720);
+        if (opModeIsActive())Thread.sleep(1000);
+        if (opModeIsActive())robotBase.vision(450, 720);
         switch (RobotBaseScorpius.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
-                robotBase.slapJewel(false);
+                if (opModeIsActive())robotBase.slapJewel(false);
                 break;
             case RobotBaseScorpius.JEWEL_RED_BLUE:
-                robotBase.slapJewel(true);
+                if (opModeIsActive())robotBase.slapJewel(true);
                 break;
         }
 
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                robotBase.driveStraight(41, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(41, 0, -0.6);
                 break;
             case UNKNOWN:
             case CENTER:
-                robotBase.driveStraight(33, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(33, 0, -0.6);
                 break;
             case RIGHT:
-                robotBase.driveStraight(25, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(25, 0, -0.6);
                 break;
         }
-        robotBase.turn(70, 0.6);
-        robotBase.turn(90, 0.2);
-        robotBase.driveStraight(3, 90, -0.6);
-        robotBase.extendGlyphter();
-        sleep(1000);
-        robotBase.retractGlyphter(2000);
-        robotBase.driveStraight(3, 90, -0.6);
-        robotBase.driveStraight(5, 90);
-        robotBase.driveStraight(9, 90, -0.6);
-        robotBase.driveStraight(4, 90);
+        if (opModeIsActive())robotBase.turn(70, 0.6);
+        if (opModeIsActive())robotBase.turn(90, 0.2);
+        if (opModeIsActive())robotBase.driveStraight(3, 90, -0.6);
+        if (opModeIsActive())robotBase.extendGlyphter();
+        if (opModeIsActive())sleep(1000);
+        if (opModeIsActive())robotBase.retractGlyphter(2000);
+        if (opModeIsActive())robotBase.driveStraight(3, 90, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(5, 90);
+        if (opModeIsActive())robotBase.driveStraight(9, 90, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(4, 90);
     }
 }

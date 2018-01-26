@@ -54,12 +54,22 @@ public class TeleopScorpius extends OpMode {
     @Override
     public void loop() {
 
-        //Because this code is in a loop, these get variables are constantly being updated with the current position of the controls
-        left = -gamepad1.left_stick_y;
-        right = -gamepad1.right_stick_y;
-        leftT = gamepad1.left_trigger;
-        rightT = gamepad1.right_trigger;
+        //CURRENTLY USED GAMEPAD CONTROLS:
+        //Both Bumpers G2
+        //All Triggers (G1 & G2)
+        //Both Joysticks G1
+        //A Button G2
+        //Y Button G2
 
+        //Because this code is in a loop, these get variables are constantly
+        //being updated with the current position of the controls.
+        //If the value from the gamepad is too small, they will just be set to 0.
+        left = (Math.abs(gamepad1.left_stick_y) < 0.05) ? 0 : -gamepad1.left_stick_y;
+        right = (Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : -gamepad1.right_stick_y;
+        leftT = (Math.abs(gamepad1.left_trigger) < 0.05) ? 0 : gamepad1.left_trigger;
+        rightT = (Math.abs(gamepad1.right_trigger) < 0.05) ? 0 : gamepad1.right_trigger;
+
+        //lifter
         if (gamepad2.left_bumper){
             motorLifter.setPower(0.5);
         } else if (gamepad2.left_trigger>0.35){
@@ -68,6 +78,7 @@ public class TeleopScorpius extends OpMode {
             motorLifter.setPower(0);
         }
 
+        //scooper
         if (gamepad2.right_bumper) {
             motorScoop.setPower(-0.1);
         } else if (gamepad2.right_trigger>0.35){
@@ -76,6 +87,7 @@ public class TeleopScorpius extends OpMode {
             motorScoop.setPower(0);
         }
 
+        //grabber
         if(gamepad2.a) {
             servoGrabberLeft.setPosition(0.81);
             servoGrabberRight.setPosition(0.23);
@@ -85,31 +97,23 @@ public class TeleopScorpius extends OpMode {
             servoGrabberRight.setPosition(0.4);
         }
 
-        //If you're barely pushing down on the joysticks or the triggers, don't go
-        if (Math.abs(left) + Math.abs(leftT) + Math.abs(rightT) < 0.1) {
-            frontLeftPower = 0;
-            backLeftPower = 0;
-        }
         //if the left joystick is pushed, give the motors power to make the left side go.
         //if the right trigger is pushed, give the motors power to make the robot drift to the right.
         //And so on.
-        else {
-            frontLeftPower = left + rightT - leftT;
-            backLeftPower = left - rightT + leftT;
-        }
-
-        //Same as the left side
-        if (Math.abs(right) + Math.abs(leftT) + Math.abs(rightT) < 0.1) {
-            frontRightPower = 0;
-            backRightPower = 0;
-        }
-        else {
-            frontRightPower = right + rightT - leftT;
-            backRightPower = right - rightT + leftT;
-        }
+        frontLeftPower = left + rightT - leftT;
+        backLeftPower = left - rightT + leftT;
+        frontRightPower = right + rightT - leftT;
+        backRightPower = right - rightT + leftT;
 
         //if any motor power is over one, this will scale it back and all the other motors' powers correspondingly
         reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
+
+        if (gamepad1.left_bumper) {
+            frontLeftPower /= 2;
+            frontRightPower /= 2;
+            backLeftPower /= 2;
+            backRightPower /= 2;
+        }
 
         //Give all the motors their powers
         motorFrontLeft.setPower(frontLeftPower);

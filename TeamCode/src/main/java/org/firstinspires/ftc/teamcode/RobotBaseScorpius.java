@@ -203,9 +203,11 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        int timer = 0;
         motorLifter.setPower(-0.5);
-        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(i)) {
+        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(i) && timer < 200 ) {
             Thread.sleep(10);
+            timer++;
         }
         motorLifter.setPower(0);
     }
@@ -235,6 +237,10 @@ public class RobotBaseScorpius implements SensorEventListener{
     protected void openGrabby () {
         servoGrabberLeft.setPosition(0.81);
         servoGrabberRight.setPosition(0.23);
+    }
+    protected void initGrabby() {
+        servoGrabberLeft.setPosition(0.90);
+        servoGrabberRight.setPosition(0.14);
     }
 
     protected void slapJewel (boolean forward) throws InterruptedException {
