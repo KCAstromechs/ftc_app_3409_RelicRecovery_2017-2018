@@ -22,7 +22,7 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
         RobotBaseScorpius robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
-        robotBase.initGrabby();
+        robotBase.initGrabby(true);
 
         //initialize green square for lineup
         appUtil.synchronousRunOnUiThread(new Runnable() {

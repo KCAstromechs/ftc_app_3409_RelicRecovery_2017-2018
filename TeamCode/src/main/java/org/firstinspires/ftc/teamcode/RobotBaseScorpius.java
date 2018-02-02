@@ -107,8 +107,8 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorBackRight = hardwareMap.dcMotor.get("backRight");
         motorBackLeft = hardwareMap.dcMotor.get("backLeft");
 
-        motorScoop = hardwareMap.dcMotor.get("scoop");
-        motorLifter = hardwareMap.dcMotor.get("lifter");
+        //motorScoop = hardwareMap.dcMotor.get("scoop");
+        //motorLifter = hardwareMap.dcMotor.get("lifter");
 
         servoSlapperHorizontal = hardwareMap.servo.get("slapperHorizontal");
         servoSlapperVertical = hardwareMap.servo.get("slapperVertical");
@@ -124,16 +124,16 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Ensures that speed control is turned off
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Brake the motors when power is 0
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -238,9 +238,15 @@ public class RobotBaseScorpius implements SensorEventListener{
         servoGrabberLeft.setPosition(0.81);
         servoGrabberRight.setPosition(0.23);
     }
-    protected void initGrabby() {
-        servoGrabberLeft.setPosition(0.90);
-        servoGrabberRight.setPosition(0.14);
+    protected void initGrabby(boolean isAuto) {
+        if (isAuto) {
+            servoGrabberLeft.setPosition(0.90);
+            servoGrabberRight.setPosition(0.14);
+        }
+        else {
+            servoGrabberLeft.setPosition(0.81);
+            servoGrabberRight.setPosition(0.23);
+        }
     }
 
     protected void slapJewel (boolean forward) throws InterruptedException {
@@ -259,6 +265,22 @@ public class RobotBaseScorpius implements SensorEventListener{
         Thread.sleep(200);
         servoSlapperHorizontal.setPosition(slapperHorizontal_INITIAL);
 
+    }
+
+    protected void updateDriveMotors(double frontLeft, double frontRight, double backLeft, double backRight, boolean slowDrive) {
+        //tank drive
+
+        if (slowDrive) {
+            frontLeft /= 2;
+            frontRight /= 2;
+            backLeft /= 2;
+            backRight /= 2;
+        }
+
+        motorFrontLeft.setPower(frontLeft);
+        motorFrontRight.setPower(frontRight);
+        motorBackLeft.setPower(backLeft);
+        motorBackRight.setPower(backRight);
     }
 
     protected void vision(int startXpx, int startYpx) throws InterruptedException {

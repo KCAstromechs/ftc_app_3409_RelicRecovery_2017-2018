@@ -22,7 +22,7 @@ public class ScorpiusAutoBlueFront extends LinearOpMode {
         robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
-        robotBase.initGrabby();
+        robotBase.initGrabby(true);
 
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
