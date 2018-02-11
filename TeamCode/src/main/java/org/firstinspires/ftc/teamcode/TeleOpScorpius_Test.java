@@ -12,10 +12,6 @@ public class TeleOpScorpius_Test extends OpMode {
 
     RobotBaseScorpius robotBase;
 
-    //motor declaration
-    DcMotor motorScoop;
-    DcMotor motorLifter;
-    Servo servoGrabberLeft, servoGrabberRight;
     int scoopTarget = 0;
     double scoopPower = 0;
     final double kScoopP = 0.0008;
@@ -32,64 +28,46 @@ public class TeleOpScorpius_Test extends OpMode {
 
         robotBase.init(this, hardwareMap);
         robotBase.initGrabby(false);
-
-        //setup scoop
-        motorScoop = hardwareMap.dcMotor.get("scoop");
-        motorScoop.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorScoop.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        motorLifter = hardwareMap.dcMotor.get("lifter");
-        motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
     public void loop() {
-
-        //CURRENTLY USED GAMEPAD CONTROLS:
-        //Both Bumpers G2
-        //All Triggers (G1 & G2)
-        //Both Joysticks G1
-        //A Button G2
-        //Y Button G2
-
         //lifter
-        if (gamepad2.left_bumper){
-            motorLifter.setPower(0.5);
-        } else if (gamepad2.left_trigger>0.35){
-            motorLifter.setPower(-0.5);
+        if (gamepad2.right_bumper){
+            robotBase.motorLifter.setPower(0.5);
+        } else if (gamepad2.right_trigger>0.35){
+            robotBase.motorLifter.setPower(-(gamepad2.right_trigger/1.5));
         } else {
-            motorLifter.setPower(0);
+            robotBase.motorLifter.setPower(0);
         }
 
         //scooper
-        scoopError = Math.abs(scoopTarget - motorScoop.getCurrentPosition());
+        scoopError = Math.abs(scoopTarget - robotBase.motorScoop.getCurrentPosition());
 
-        if (Math.abs(gamepad2.right_stick_y) > 0.2) {
+        if (Math.abs(gamepad2.left_stick_y) > 0.2) {
             //Moves scoop up
-            scoopPower = gamepad2.right_stick_y * 0.4;
+            scoopPower = gamepad2.left_stick_y * 0.4;
             scoopRecentlyPressed = true;
-        } else if (scoopRecentlyPressed && !(Math.abs(gamepad2.right_stick_y) > 0.2)) {
+        } else if (scoopRecentlyPressed && !(Math.abs(gamepad2.left_stick_y) > 0.2)) {
             scoopRecentlyPressed = false;
-            scoopTarget = motorScoop.getCurrentPosition();
-        } else if(motorScoop.getCurrentPosition() < scoopTarget && !scoopRecentlyPressed) {
-            scoopPower = -scoopError*kScoopP;
-        } else if(motorScoop.getCurrentPosition() > scoopTarget && !scoopRecentlyPressed) {
+            scoopTarget = robotBase.motorScoop.getCurrentPosition();
+        } else if(robotBase.motorScoop.getCurrentPosition() < scoopTarget && !scoopRecentlyPressed) {
             scoopPower = scoopError*kScoopP;
+        } else if(robotBase.motorScoop.getCurrentPosition() > scoopTarget && !scoopRecentlyPressed) {
+            scoopPower = -scoopError*kScoopP;
         }
-        motorScoop.setPower(scoopPower);
+        robotBase.motorScoop.setPower(scoopPower);
 
         //grabber
-        if(gamepad2.right_trigger > 0.25) {
+        if(gamepad2.left_trigger > 0.25) {
             robotBase.openGrabby();
         }
-        if(gamepad2.right_bumper) {
+        if(gamepad2.left_bumper) {
             robotBase.closeGrabby();
         }
-        if(gamepad2.y) {
-            servoGrabberLeft.setPosition(0.76);
-            servoGrabberRight.setPosition(0.18);
+        if(gamepad2.a) {
+            robotBase.servoGrabberLeft.setPosition(0.76);
+            robotBase.servoGrabberRight.setPosition(0.18);
         }
 
         //Because this code is in a loop, these get variables are constantly
@@ -118,7 +96,7 @@ public class TeleOpScorpius_Test extends OpMode {
         telemetry.addData("back left: ", backLeftPower);
         telemetry.addData("back right: ", backRightPower);
         telemetry.addData("scoopTarget: ", scoopTarget);
-        telemetry.addData("scoopPos: ", motorScoop.getCurrentPosition());
+        telemetry.addData("scoopPos: ", robotBase.motorScoop.getCurrentPosition());
         telemetry.update();
     }
 

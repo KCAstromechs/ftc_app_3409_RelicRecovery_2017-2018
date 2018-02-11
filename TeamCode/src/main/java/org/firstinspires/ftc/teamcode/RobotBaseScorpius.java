@@ -36,11 +36,11 @@ import static android.content.Context.SENSOR_SERVICE;
 
 @SuppressWarnings("WeakerAccess")
 public class RobotBaseScorpius implements SensorEventListener{
-    private DcMotor motorFrontRight, motorFrontLeft, motorBackLeft, encoderMotor, motorBackRight, motorLifter, motorScoop;
+    DcMotor motorFrontRight, motorFrontLeft, motorBackLeft, encoderMotor, motorBackRight, motorLifter, motorScoop;
+    Servo servoSlapperHorizontal, servoSlapperVertical, servoGrabberLeft, servoGrabberRight;
+
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
-
-    private Servo servoSlapperHorizontal, servoSlapperVertical, servoGrabberLeft, servoGrabberRight;
 
     private static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 26.0/32.0;     // Numerator is gear on motor; Denominator is gear on wheel
@@ -107,8 +107,8 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorBackRight = hardwareMap.dcMotor.get("backRight");
         motorBackLeft = hardwareMap.dcMotor.get("backLeft");
 
-        //motorScoop = hardwareMap.dcMotor.get("scoop");
-        //motorLifter = hardwareMap.dcMotor.get("lifter");
+        motorScoop = hardwareMap.dcMotor.get("scoop");
+        motorLifter = hardwareMap.dcMotor.get("lifter");
 
         servoSlapperHorizontal = hardwareMap.servo.get("slapperHorizontal");
         servoSlapperVertical = hardwareMap.servo.get("slapperVertical");
@@ -124,16 +124,16 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Ensures that speed control is turned off
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //Brake the motors when power is 0
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -145,13 +145,13 @@ public class RobotBaseScorpius implements SensorEventListener{
         //sets all initial servo values
         servoSlapperVertical.setPosition(0.875);
         servoSlapperHorizontal.setPosition(0.37);
-
+    }
+    protected void initVuforia() {
         //Accessing gyro and accelerometer from Android
         mSensorManager = (SensorManager) hardwareMap.appContext.getSystemService(SENSOR_SERVICE);
         mRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
-    }
-    protected void initVuforia() {
+
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "Ac8xsqH/////AAAAGcG2OeE2NECwo7mM5f9KX1RKmDT79NqkIHc/ATgW2+loN9Fr8fkfb6jE42RZmiRYeei1FvM2M3kUPdl53j" +
                 "+oeuhahXi7ApkbRv9cef0kbffj+4EkWKWCgQM39sRegfX+os6PjJh1fwGdxxijW0CYXnp2Rd1vkTjIs/cW2/7TFTtuJTkc17l" +
