@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.os.Environment;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -37,7 +38,8 @@ import static android.content.Context.SENSOR_SERVICE;
 @SuppressWarnings("WeakerAccess")
 public class RobotBaseScorpius implements SensorEventListener{
     DcMotor motorFrontRight, motorFrontLeft, motorBackLeft, encoderMotor, motorBackRight, motorLifter, motorScoop;
-    Servo servoSlapperHorizontal, servoSlapperVertical, servoGrabberLeft, servoGrabberRight;
+    Servo servoSlapperHorizontal, servoSlapperVertical, servoGrabberLeft, servoGrabberRight, servoElbow, servoHand;
+    DcMotor servoExtender;
 
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
@@ -114,6 +116,9 @@ public class RobotBaseScorpius implements SensorEventListener{
         servoSlapperVertical = hardwareMap.servo.get("slapperVertical");
         servoGrabberLeft = hardwareMap.servo.get("grabberLeft");
         servoGrabberRight = hardwareMap.servo.get("grabberRight");
+        servoElbow = hardwareMap.servo.get("elbow");
+        servoHand = hardwareMap.servo.get("hand");
+        servoExtender = hardwareMap.dcMotor.get("extender");
 
         //reverses left side so that the robot drives forward when positive power is applied to all drive motors
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);

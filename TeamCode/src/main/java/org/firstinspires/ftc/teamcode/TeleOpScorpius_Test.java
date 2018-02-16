@@ -17,6 +17,12 @@ public class TeleOpScorpius_Test extends OpMode {
     final double kScoopP = 0.0008;
     int scoopError = 0;
     boolean scoopRecentlyPressed = false;
+    boolean down;
+    boolean downLast;
+    boolean up;
+    boolean upLast;
+    boolean handClosed = true;
+    int elbow = 0;
 
     //variables to be used in manipulating motor power
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
@@ -70,6 +76,57 @@ public class TeleOpScorpius_Test extends OpMode {
             robotBase.servoGrabberRight.setPosition(0.18);
         }
 
+        if(downLast) {
+            down = false;
+            if (!gamepad2.dpad_down) {
+                downLast = false;
+            }
+        } else {
+            if(gamepad2.dpad_down){
+                down = true;
+                downLast = true;
+            }
+        }
+
+        if(upLast) {
+            up = false;
+            if (!gamepad2.dpad_up) {
+                upLast = false;
+            }
+        } else {
+            if(gamepad2.dpad_up){
+                up = true;
+                upLast = true;
+            }
+        }
+
+        if(down){
+            handClosed = !handClosed;
+        }
+        if(up){
+            if(elbow!=2){
+                elbow = 2;
+            } else {
+                elbow = 1;
+            }
+        }
+
+        if(handClosed){
+            robotBase.servoHand.setPosition(1);
+        } else {
+            robotBase.servoHand.setPosition(0.35);
+        }
+        switch(elbow){
+            case 1:
+                robotBase.servoElbow.setPosition(0.55);
+                break;
+            case 2:
+                robotBase.servoElbow.setPosition(1);
+                break;
+        }
+
+        robotBase.servoExtender.setPower(gamepad2.right_stick_y);
+
         //Because this code is in a loop, these get variables are constantly
         //being updated with the current position of the controls.
         //If the value from the gamepad is too small, they will just be set to 0.
@@ -97,6 +154,7 @@ public class TeleOpScorpius_Test extends OpMode {
         telemetry.addData("back right: ", backRightPower);
         telemetry.addData("scoopTarget: ", scoopTarget);
         telemetry.addData("scoopPos: ", robotBase.motorScoop.getCurrentPosition());
+        telemetry.addData("extenderPower ", robotBase.servoExtender.getPower());
         telemetry.update();
     }
 
