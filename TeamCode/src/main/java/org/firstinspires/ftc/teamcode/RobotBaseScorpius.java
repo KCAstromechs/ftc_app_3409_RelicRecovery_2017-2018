@@ -622,7 +622,7 @@ public class RobotBaseScorpius implements SensorEventListener{
 
     /**
      * Tells the robot to strafe at a certain heading for a specified distance
-     * @param inches number of inches we ask the robot to drive, only posative numbers
+     * @param inches number of inches we ask the robot to drive, only positive numbers
      * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
      * @param power amount of power given to motors, does not affect distance driven; positive goes left, negative goes right
      */
