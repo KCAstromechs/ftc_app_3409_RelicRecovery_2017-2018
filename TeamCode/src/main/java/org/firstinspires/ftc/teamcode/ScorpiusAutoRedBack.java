@@ -5,10 +5,12 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+@Disabled
 @Autonomous (name="AutoRedBack", group = "Scorpius")
 public class ScorpiusAutoRedBack extends LinearOpMode {
 
@@ -22,7 +24,6 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
         RobotBaseScorpius robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
-        robotBase.initGrabby(true);
 
         //initialize green square for lineup
         appUtil.synchronousRunOnUiThread(new Runnable() {
@@ -72,9 +73,11 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
                 if (opModeIsActive())robotBase.strafe(5, 0);
                 break;
         }
+        if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);
         if (opModeIsActive())robotBase.retractGlyphter(2000);
+        if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.driveStraight(4, 0, -0.6);
         if (opModeIsActive())robotBase.driveStraight(3, 0);
     }

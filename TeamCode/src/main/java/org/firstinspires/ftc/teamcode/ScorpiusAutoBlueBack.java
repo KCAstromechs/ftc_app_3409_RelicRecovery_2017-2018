@@ -5,10 +5,12 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+@Disabled
 @Autonomous (name="AutoBlueBack", group = "Scorpius")
 public class ScorpiusAutoBlueBack extends LinearOpMode {
 
@@ -22,7 +24,6 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
         RobotBaseScorpius robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
-        robotBase.initGrabby(true);
 
         //initialize green square for lineup
         appUtil.synchronousRunOnUiThread(new Runnable() {
@@ -75,12 +76,14 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
         }
         telemetry.update();
         if (opModeIsActive())robotBase.turn(180);
+        if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);
         if (opModeIsActive())robotBase.retractGlyphter(2000);
+        if (opModeIsActive())robotBase.raiseGrabby();
         if (opModeIsActive())robotBase.driveStraight(8, 180, -0.6);
         if (opModeIsActive())robotBase.driveStraight(6, 180);
-
+/*
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
                 if (opModeIsActive())robotBase.strafe(28, 180, -0.6);
@@ -99,6 +102,6 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
         if (opModeIsActive()) robotBase.driveStraight(36, 165, 0.6);
         if (opModeIsActive()) robotBase.closeGrabby();
         if (opModeIsActive()) sleep(500);
-        if (opModeIsActive()) robotBase.driveStraight(5, 0, -0.6);
+        if (opModeIsActive()) robotBase.driveStraight(5, 0, -0.6);*/
     }
 }

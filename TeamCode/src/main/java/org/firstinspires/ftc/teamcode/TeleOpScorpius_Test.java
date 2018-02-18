@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @SuppressWarnings("WeakerAccess")
-@TeleOp(name="TeleopScorpius_Test")
+@TeleOp(name="TeleopScorpius")
 public class TeleOpScorpius_Test extends OpMode {
 
     RobotBaseScorpius robotBase;
@@ -33,7 +33,6 @@ public class TeleOpScorpius_Test extends OpMode {
         robotBase = new RobotBaseScorpius();
 
         robotBase.init(this, hardwareMap);
-        robotBase.initGrabby(false);
     }
 
     @Override
@@ -125,7 +124,7 @@ public class TeleOpScorpius_Test extends OpMode {
                 break;
         }
 
-        robotBase.servoExtender.setPower(gamepad2.right_stick_y);
+        robotBase.relicExtender.setPower(-gamepad2.right_stick_y);
 
         //Because this code is in a loop, these get variables are constantly
         //being updated with the current position of the controls.
@@ -146,7 +145,7 @@ public class TeleOpScorpius_Test extends OpMode {
         //if any motor power is over one, this will scale it back and all the other motors' powers correspondingly
         reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
 
-        robotBase.updateDriveMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower, gamepad1.left_bumper);
+        robotBase.updateDriveMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower, gamepad1.left_bumper || gamepad1.right_bumper);
 
         telemetry.addData("front left: ", frontLeftPower);
         telemetry.addData("front right: ", frontRightPower);
@@ -154,7 +153,7 @@ public class TeleOpScorpius_Test extends OpMode {
         telemetry.addData("back right: ", backRightPower);
         telemetry.addData("scoopTarget: ", scoopTarget);
         telemetry.addData("scoopPos: ", robotBase.motorScoop.getCurrentPosition());
-        telemetry.addData("extenderPower ", robotBase.servoExtender.getPower());
+        telemetry.addData("extenderPower ", robotBase.relicExtender.getPower());
         telemetry.update();
     }
 

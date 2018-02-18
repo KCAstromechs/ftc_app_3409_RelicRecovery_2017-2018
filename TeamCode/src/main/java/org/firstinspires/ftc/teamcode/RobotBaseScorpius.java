@@ -11,6 +11,7 @@ import android.os.Environment;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -39,7 +40,7 @@ import static android.content.Context.SENSOR_SERVICE;
 public class RobotBaseScorpius implements SensorEventListener{
     DcMotor motorFrontRight, motorFrontLeft, motorBackLeft, encoderMotor, motorBackRight, motorLifter, motorScoop;
     Servo servoSlapperHorizontal, servoSlapperVertical, servoGrabberLeft, servoGrabberRight, servoElbow, servoHand;
-    DcMotor servoExtender;
+    DcMotor relicExtender;
 
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
@@ -118,11 +119,12 @@ public class RobotBaseScorpius implements SensorEventListener{
         servoGrabberRight = hardwareMap.servo.get("grabberRight");
         servoElbow = hardwareMap.servo.get("elbow");
         servoHand = hardwareMap.servo.get("hand");
-        servoExtender = hardwareMap.dcMotor.get("extender");
+        relicExtender = hardwareMap.dcMotor.get("extender");
 
         //reverses left side so that the robot drives forward when positive power is applied to all drive motors
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorScoop.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //Resets all encoders
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -150,6 +152,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         //sets all initial servo values
         servoSlapperVertical.setPosition(0.875);
         servoSlapperHorizontal.setPosition(0.37);
+        openGrabby();
     }
     protected void initVuforia() {
         //Accessing gyro and accelerometer from Android
@@ -220,17 +223,24 @@ public class RobotBaseScorpius implements SensorEventListener{
     protected void lowerGrabby () throws InterruptedException{
         motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorScoop.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        motorScoop.setPower(-0.1);
-        while(Math.abs(motorScoop.getCurrentPosition()) < 825) {
+        motorScoop.setPower(0.5);
+        while(Math.abs(motorScoop.getCurrentPosition()) < 1520) {
             Thread.sleep(10);
         }
         motorScoop.setPower(0);
     }
 
     protected void raiseGrabby () throws InterruptedException{
-        motorScoop.setPower(0.1);
-        Thread.sleep(500);
+        motorScoop.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorScoop.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motorScoop.setPower(0.5);
+        while(Math.abs(motorScoop.getCurrentPosition()) < 1450) {
+            Thread.sleep(10);
+        }
         motorScoop.setPower(0);
     }
 
@@ -242,16 +252,6 @@ public class RobotBaseScorpius implements SensorEventListener{
     protected void openGrabby () {
         servoGrabberLeft.setPosition(0.81);
         servoGrabberRight.setPosition(0.23);
-    }
-    protected void initGrabby(boolean isAuto) {
-        if (isAuto) {
-            servoGrabberLeft.setPosition(0.90);
-            servoGrabberRight.setPosition(0.14);
-        }
-        else {
-            servoGrabberLeft.setPosition(0.81);
-            servoGrabberRight.setPosition(0.23);
-        }
     }
 
     protected void slapJewel (boolean forward) throws InterruptedException {

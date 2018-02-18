@@ -24,7 +24,6 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
         robotBase = new RobotBaseScorpius();
         robotBase.init(this, hardwareMap);
         robotBase.initVuforia();
-        robotBase.initGrabby(true);
 
         appUtil.synchronousRunOnUiThread(new Runnable() {
             @Override
@@ -75,6 +74,7 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
         if (opModeIsActive())robotBase.turn(70, 0.6);
         if (opModeIsActive())robotBase.turn(90, 0.2);
         if (opModeIsActive())robotBase.driveStraight(3, 90, -0.6);
+        if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);
         if (opModeIsActive())robotBase.retractGlyphter(2000);
