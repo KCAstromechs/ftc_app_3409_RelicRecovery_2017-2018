@@ -226,7 +226,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorScoop.setDirection(DcMotorSimple.Direction.FORWARD);
 
         motorScoop.setPower(0.5);
-        while(Math.abs(motorScoop.getCurrentPosition()) < 1520) {
+        while(Math.abs(motorScoop.getCurrentPosition()) < 950) {
             Thread.sleep(10);
         }
         motorScoop.setPower(0);
@@ -238,7 +238,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorScoop.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorScoop.setPower(0.5);
-        while(Math.abs(motorScoop.getCurrentPosition()) < 1450) {
+        while(Math.abs(motorScoop.getCurrentPosition()) < 910) {
             Thread.sleep(10);
         }
         motorScoop.setPower(0);

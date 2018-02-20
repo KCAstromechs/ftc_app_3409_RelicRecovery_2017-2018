@@ -61,19 +61,19 @@ public class ScorpiusAutoRedFront extends LinearOpMode {
 
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                if (opModeIsActive())robotBase.driveStraight(41, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(42, 0, -0.6);
                 break;
             case UNKNOWN:
             case CENTER:
-                if (opModeIsActive())robotBase.driveStraight(33, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(34, 0, -0.6);
                 break;
             case RIGHT:
-                if (opModeIsActive())robotBase.driveStraight(25, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(26, 0, -0.6);
                 break;
         }
         if (opModeIsActive())robotBase.turn(70, 0.6);
         if (opModeIsActive())robotBase.turn(90, 0.2);
-        if (opModeIsActive())robotBase.driveStraight(3, 90, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(4, 90, -0.6);
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);

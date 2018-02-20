@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-@Disabled
 @Autonomous (name="AutoBlueBack", group = "Scorpius")
 public class ScorpiusAutoBlueBack extends LinearOpMode {
 
@@ -74,34 +73,16 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
                 if (opModeIsActive())robotBase.strafe(24, 0);
                 break;
         }
-        telemetry.update();
-        if (opModeIsActive())robotBase.turn(180);
+        if (opModeIsActive())robotBase.turn(160, 0.6);
+        if (opModeIsActive())robotBase.turn(180, 0.2);
+        if (opModeIsActive())robotBase.driveStraight(2, 180, -0.6);
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);
         if (opModeIsActive())robotBase.retractGlyphter(2000);
-        if (opModeIsActive())robotBase.raiseGrabby();
-        if (opModeIsActive())robotBase.driveStraight(8, 180, -0.6);
-        if (opModeIsActive())robotBase.driveStraight(6, 180);
-/*
-        switch (RobotBaseScorpius.pictoPosition) {
-            case LEFT:
-                if (opModeIsActive())robotBase.strafe(28, 180, -0.6);
-                break;
-            case UNKNOWN:
-            case CENTER:
-                if (opModeIsActive())robotBase.strafe(21, 180, -0.6);
-                break;
-            case RIGHT:
-                if (opModeIsActive()) robotBase.strafe(12, 180, -0.6);
-                break;
-        }
-
-        if (opModeIsActive()) robotBase.lowerGrabby();
-        if (opModeIsActive()) robotBase.openGrabby();
-        if (opModeIsActive()) robotBase.driveStraight(36, 165, 0.6);
-        if (opModeIsActive()) robotBase.closeGrabby();
-        if (opModeIsActive()) sleep(500);
-        if (opModeIsActive()) robotBase.driveStraight(5, 0, -0.6);*/
+        if (opModeIsActive())robotBase.driveStraight(4, 180, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(3, 180);
+        if (opModeIsActive())robotBase.driveStraight(5, 180, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(3, 180);
     }
 }

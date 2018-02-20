@@ -1,67 +1,130 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
 @SuppressWarnings("WeakerAccess")
-@TeleOp(name="TeleopScorpius")
+@TeleOp(name="Teleop")
 public class TeleopScorpius extends OpMode {
 
-    //motor declaration
-    DcMotor motorFrontLeft;
-    DcMotor motorFrontRight;
-    DcMotor motorBackRight;
-    DcMotor motorBackLeft;
-    DcMotor motorScoop;
-    DcMotor motorLifter;
-    Servo servoGrabberLeft, servoGrabberRight;
-    Servo servoSlapperHorizontal, servoSlapperVertical;
+    RobotBaseScorpius robotBase;
 
+    int scoopTarget = 0;
+    double scoopPower = 0;
+    final double kScoopP = 0.0008;
+    int scoopError = 0;
+    boolean scoopRecentlyPressed = false;
+    boolean down;
+    boolean downLast;
+    boolean up;
+    boolean upLast;
+    boolean handClosed = true;
+    int elbow = 0;
 
     //variables to be used in manipulating motor power
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
 
     @Override
     public void init() {
-        //Connect motor variables to real life motors
-        motorFrontLeft = hardwareMap.dcMotor.get("frontLeft");
-        motorFrontRight = hardwareMap.dcMotor.get("frontRight");
-        motorBackRight = hardwareMap.dcMotor.get("backRight");
-        motorBackLeft = hardwareMap.dcMotor.get("backLeft");
-        motorScoop = hardwareMap.dcMotor.get("scoop");
-        motorLifter = hardwareMap.dcMotor.get("lifter");
-        servoGrabberLeft = hardwareMap.servo.get("grabberLeft");
-        servoGrabberRight = hardwareMap.servo.get("grabberRight");
-        servoSlapperHorizontal = hardwareMap.servo.get("slapperHorizontal");
-        servoSlapperVertical = hardwareMap.servo.get("slapperVertical");
 
-        //Reverse the left-side motors
-        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorScoop.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robotBase = new RobotBaseScorpius();
 
-        servoSlapperVertical.setPosition(0.875);
-        servoSlapperHorizontal.setPosition(0.37);
-
-        servoGrabberLeft.setPosition(0.81);
-        servoGrabberRight.setPosition(0.23);
+        robotBase.init(this, hardwareMap);
     }
 
     @Override
     public void loop() {
+        //lifter
+        if (gamepad2.right_bumper){
+            robotBase.motorLifter.setPower(0.5);
+        } else if (gamepad2.right_trigger>0.35){
+            robotBase.motorLifter.setPower(-(gamepad2.right_trigger/1.5));
+        } else {
+            robotBase.motorLifter.setPower(0);
+        }
 
-        //CURRENTLY USED GAMEPAD CONTROLS:
-        //Both Bumpers G2
-        //All Triggers (G1 & G2)
-        //Both Joysticks G1
-        //A Button G2
-        //Y Button G2
+        //scooper
+        scoopError = Math.abs(scoopTarget - robotBase.motorScoop.getCurrentPosition());
+
+        if (Math.abs(gamepad2.left_stick_y) > 0.2) {
+            //Moves scoop up
+            scoopPower = gamepad2.left_stick_y * 0.32;
+            scoopRecentlyPressed = true;
+        } else if (scoopRecentlyPressed && !(Math.abs(gamepad2.left_stick_y) > 0.2)) {
+            scoopRecentlyPressed = false;
+            scoopTarget = robotBase.motorScoop.getCurrentPosition();
+        } else if(robotBase.motorScoop.getCurrentPosition() < scoopTarget && !scoopRecentlyPressed) {
+            scoopPower = scoopError*kScoopP;
+        } else if(robotBase.motorScoop.getCurrentPosition() > scoopTarget && !scoopRecentlyPressed) {
+            scoopPower = -scoopError*kScoopP;
+        }
+        robotBase.motorScoop.setPower(scoopPower);
+
+        //grabber
+        if(gamepad2.left_trigger > 0.25) {
+            robotBase.openGrabby();
+        }
+        if(gamepad2.left_bumper) {
+            robotBase.closeGrabby();
+        }
+        if(gamepad2.a) {
+            robotBase.servoGrabberLeft.setPosition(0.9);
+            robotBase.servoGrabberRight.setPosition(0.4);
+        }
+
+        if(downLast) {
+            down = false;
+            if (!gamepad2.dpad_down) {
+                downLast = false;
+            }
+        } else {
+            if(gamepad2.dpad_down){
+                down = true;
+                downLast = true;
+            }
+        }
+
+        if(upLast) {
+            up = false;
+            if (!gamepad2.dpad_up) {
+                upLast = false;
+            }
+        } else {
+            if(gamepad2.dpad_up){
+                up = true;
+                upLast = true;
+            }
+        }
+
+        if(down){
+            handClosed = !handClosed;
+        }
+        if(up){
+            if(elbow!=2){
+                elbow = 2;
+            } else {
+                elbow = 1;
+            }
+        }
+
+        if(handClosed){
+            robotBase.servoHand.setPosition(1);
+        } else {
+            robotBase.servoHand.setPosition(0.35);
+        }
+        switch(elbow){
+            case 1:
+                robotBase.servoElbow.setPosition(0.52);
+                break;
+            case 2:
+                robotBase.servoElbow.setPosition(1);
+                break;
+        }
+
+        robotBase.relicExtender.setPower(-gamepad2.right_stick_y);
 
         //Because this code is in a loop, these get variables are constantly
         //being updated with the current position of the controls.
@@ -70,34 +133,6 @@ public class TeleopScorpius extends OpMode {
         right = (Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : -gamepad1.right_stick_y;
         leftT = (Math.abs(gamepad1.left_trigger) < 0.05) ? 0 : gamepad1.left_trigger;
         rightT = (Math.abs(gamepad1.right_trigger) < 0.05) ? 0 : gamepad1.right_trigger;
-
-        //lifter
-        if (gamepad2.left_bumper){
-            motorLifter.setPower(0.5);
-        } else if (gamepad2.left_trigger>0.35){
-            motorLifter.setPower(-0.5);
-        } else {
-            motorLifter.setPower(0);
-        }
-
-        //scooper
-        if (gamepad2.right_bumper) {
-            motorScoop.setPower(-0.1);
-        } else if (gamepad2.right_trigger>0.35){
-            motorScoop.setPower(0.1);
-        } else {
-            motorScoop.setPower(0);
-        }
-
-        //grabber
-        if(gamepad2.a) {
-            servoGrabberLeft.setPosition(0.81);
-            servoGrabberRight.setPosition(0.23);
-        }
-        if(gamepad2.y) {
-            servoGrabberLeft.setPosition(0.6);
-            servoGrabberRight.setPosition(0.4);
-        }
 
         //if the left joystick is pushed, give the motors power to make the left side go.
         //if the right trigger is pushed, give the motors power to make the robot drift to the right.
@@ -110,24 +145,16 @@ public class TeleopScorpius extends OpMode {
         //if any motor power is over one, this will scale it back and all the other motors' powers correspondingly
         reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
 
-        if (gamepad1.left_bumper) {
-            frontLeftPower /= 2;
-            frontRightPower /= 2;
-            backLeftPower /= 2;
-            backRightPower /= 2;
-        }
-
-        //Give all the motors their powers
-        motorFrontLeft.setPower(frontLeftPower);
-        motorFrontRight.setPower(frontRightPower);
-        motorBackLeft.setPower(backLeftPower);
-        motorBackRight.setPower(backRightPower);
+        robotBase.updateDriveMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower, gamepad1.left_bumper || gamepad1.right_bumper);
 
         telemetry.addData("front left: ", frontLeftPower);
         telemetry.addData("front right: ", frontRightPower);
         telemetry.addData("back left: ", backLeftPower);
         telemetry.addData("back right: ", backRightPower);
-
+        telemetry.addData("scoopTarget: ", scoopTarget);
+        telemetry.addData("scoopPos: ", robotBase.motorScoop.getCurrentPosition());
+        telemetry.addData("extenderPower ", robotBase.relicExtender.getPower());
+        telemetry.update();
     }
 
     //This method takes the power, finds what multiplier is needed to scale it back to one, and

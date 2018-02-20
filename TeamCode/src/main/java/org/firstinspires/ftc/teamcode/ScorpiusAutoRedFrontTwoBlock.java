@@ -69,7 +69,7 @@ public class ScorpiusAutoRedFrontTwoBlock extends LinearOpMode {
 
         if (opModeIsActive())robotBase.turn(70, 0.6);
         if (opModeIsActive())robotBase.turn(90, 0.2);
-        if (opModeIsActive())robotBase.driveStraight(3, 90, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(4, 90, -0.6);
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);

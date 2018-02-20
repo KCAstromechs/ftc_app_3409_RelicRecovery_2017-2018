@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-@Disabled
 @Autonomous (name="AutoRedBack", group = "Scorpius")
 public class ScorpiusAutoRedBack extends LinearOpMode {
 
@@ -73,12 +72,14 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
                 if (opModeIsActive())robotBase.strafe(5, 0);
                 break;
         }
+        if (opModeIsActive())robotBase.driveStraight(2, 0, -0.6);
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);
         if (opModeIsActive())robotBase.retractGlyphter(2000);
-        if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.driveStraight(4, 0, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(3, 0);
+        if (opModeIsActive())robotBase.driveStraight(5, 0, -0.6);
         if (opModeIsActive())robotBase.driveStraight(3, 0);
     }
 }
