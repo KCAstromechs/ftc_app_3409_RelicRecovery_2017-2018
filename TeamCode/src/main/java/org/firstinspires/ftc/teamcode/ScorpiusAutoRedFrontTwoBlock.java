@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @Autonomous(name="AutoRedFront2Block", group="Scorpius")
@@ -77,13 +78,18 @@ public class ScorpiusAutoRedFrontTwoBlock extends LinearOpMode {
         if (opModeIsActive())robotBase.driveStraight(3, 90, -0.6);
         if (opModeIsActive())robotBase.driveStraight(4, 90);
         if (opModeIsActive())robotBase.openGrabby();
-        if (opModeIsActive())robotBase.driveStraight(22, 90);
+        if (opModeIsActive())robotBase.driveStraight(22, 90, 0.9);
         if (opModeIsActive())robotBase.driveStraight(4, 90, 0.3);
         if (opModeIsActive())robotBase.closeGrabby();
         if (opModeIsActive())sleep(500);
         if (opModeIsActive())robotBase.driveStraight(4, 90, -0.6);
         if (opModeIsActive())robotBase.raiseGrabby();
-        if (opModeIsActive())robotBase.driveStraight(22, 90, -0.6);
+
+        if(RobotBaseScorpius.pictoPosition == RelicRecoveryVuMark.CENTER || RobotBaseScorpius.pictoPosition == RelicRecoveryVuMark.UNKNOWN){
+            if (opModeIsActive())robotBase.strafe(8, 90);
+        }
+
+        if (opModeIsActive())robotBase.driveStraight(21, 90, -0.9);
         if (opModeIsActive())robotBase.openGrabby();
         if (opModeIsActive())sleep(500);
         if (opModeIsActive())robotBase.lowerGrabby();
