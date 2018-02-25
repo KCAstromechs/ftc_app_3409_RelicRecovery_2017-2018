@@ -213,7 +213,7 @@ public class RobotBaseScorpius implements SensorEventListener{
 
         int timer = 0;
         motorLifter.setPower(-0.5);
-        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(i) && timer < 200 ) {
+        while(Math.abs(motorLifter.getCurrentPosition()) < Math.abs(i) || timer < 200 ) {
             Thread.sleep(10);
             timer++;
         }
@@ -226,8 +226,10 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorScoop.setDirection(DcMotorSimple.Direction.FORWARD);
 
         motorScoop.setPower(0.5);
-        while(Math.abs(motorScoop.getCurrentPosition()) < 950) {
+        int timeOut = 0;
+        while(Math.abs(motorScoop.getCurrentPosition()) < 950 || timeOut < 100) {
             Thread.sleep(10);
+            timeOut++;
         }
         motorScoop.setPower(0);
     }
@@ -237,9 +239,11 @@ public class RobotBaseScorpius implements SensorEventListener{
         motorScoop.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorScoop.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        int timeOut = 0;
         motorScoop.setPower(0.5);
-        while(Math.abs(motorScoop.getCurrentPosition()) < 910) {
+        while(Math.abs(motorScoop.getCurrentPosition()) < 910 || timeOut < 100) {
             Thread.sleep(10);
+            timeOut++;
         }
         motorScoop.setPower(0);
     }
