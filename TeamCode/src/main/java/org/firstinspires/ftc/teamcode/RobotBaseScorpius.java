@@ -152,6 +152,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         //sets all initial servo values
         servoSlapperVertical.setPosition(0.875);
         servoSlapperHorizontal.setPosition(0.37);
+        servoElbow.setPosition(0);
         openGrabby();
     }
     protected void initVuforia() {

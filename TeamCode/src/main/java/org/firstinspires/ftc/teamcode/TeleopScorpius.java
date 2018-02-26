@@ -117,7 +117,7 @@ public class TeleopScorpius extends OpMode {
         }
         switch(elbow){
             case 1:
-                robotBase.servoElbow.setPosition(0.52);
+                robotBase.servoElbow.setPosition(0.35);
                 break;
             case 2:
                 robotBase.servoElbow.setPosition(1);
