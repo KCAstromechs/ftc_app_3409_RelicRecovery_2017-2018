@@ -68,12 +68,12 @@ public class ScorpiusAutoRedFrontTwoBlock extends LinearOpMode {
                 break;
         }
 
-        if (opModeIsActive())robotBase.turn(70, 0.6);
+        if (opModeIsActive())robotBase.turn(70, 0.8);
         if (opModeIsActive())robotBase.turn(90, 0.2);
         if (opModeIsActive())robotBase.driveStraight(4, 90, -0.6);
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
-        if (opModeIsActive())sleep(1000);
+        if (opModeIsActive())sleep(500);
         if (opModeIsActive())robotBase.retractGlyphter(2000);
         if (opModeIsActive())robotBase.driveStraight(3, 90, -0.6);
         if (opModeIsActive())robotBase.driveStraight(4, 90);
@@ -86,7 +86,7 @@ public class ScorpiusAutoRedFrontTwoBlock extends LinearOpMode {
         if (opModeIsActive())robotBase.raiseGrabby();
 
         if(RobotBaseScorpius.pictoPosition == RelicRecoveryVuMark.CENTER || RobotBaseScorpius.pictoPosition == RelicRecoveryVuMark.UNKNOWN){
-            if (opModeIsActive())robotBase.strafe(8, 90);
+            if (opModeIsActive())robotBase.strafe(8, 90, 0.75);
         }
 
         if (opModeIsActive())robotBase.driveStraight(21, 90, -0.9);
@@ -95,7 +95,7 @@ public class ScorpiusAutoRedFrontTwoBlock extends LinearOpMode {
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.driveStraight(1, 90, -0.3);
         if (opModeIsActive())robotBase.extendGlyphter();
-        if (opModeIsActive())sleep(1000);
+        if (opModeIsActive())sleep(500);
         if (opModeIsActive())robotBase.retractGlyphter(1800);
         if (opModeIsActive())robotBase.driveStraight(5, 90, -0.6);
         if (opModeIsActive())robotBase.driveStraight(4, 90);

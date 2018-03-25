@@ -39,7 +39,7 @@ public class TeleopScorpius extends OpMode {
     public void loop() {
         //lifter
         if (gamepad2.right_bumper){
-            robotBase.motorLifter.setPower(0.5);
+            robotBase.motorLifter.setPower(0.562);
         } else if (gamepad2.right_trigger>0.35){
             robotBase.motorLifter.setPower(-(gamepad2.right_trigger/1.5));
         } else {
@@ -51,7 +51,7 @@ public class TeleopScorpius extends OpMode {
 
         if (Math.abs(gamepad2.left_stick_y) > 0.2) {
             //Moves scoop up
-            scoopPower = gamepad2.left_stick_y * 0.32;
+            scoopPower = gamepad2.left_stick_y * 0.416;
             scoopRecentlyPressed = true;
         } else if (scoopRecentlyPressed && !(Math.abs(gamepad2.left_stick_y) > 0.2)) {
             scoopRecentlyPressed = false;
@@ -145,7 +145,7 @@ public class TeleopScorpius extends OpMode {
         //if any motor power is over one, this will scale it back and all the other motors' powers correspondingly
         reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
 
-        robotBase.updateDriveMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower, gamepad1.left_bumper || gamepad1.right_bumper);
+        robotBase.updateDriveMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower, gamepad1.left_bumper || gamepad1.right_bumper, gamepad1.left_bumper && gamepad1.right_bumper);
 
         telemetry.addData("front left: ", frontLeftPower);
         telemetry.addData("front right: ", frontRightPower);

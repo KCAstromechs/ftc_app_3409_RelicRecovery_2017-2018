@@ -45,12 +45,13 @@ public class RobotBaseScorpius implements SensorEventListener{
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
 
-    private static final double COUNTS_PER_MOTOR_REV = 1100;    // NeveRest Motor Encoder
+    private static final double COUNTS_PER_MOTOR_REV = 1100/40;    // NeveRest Motor Encoder
+    private static final double MOTOR_GEARBOX_RATIO = 20;
     private static final double DRIVE_GEAR_REDUCTION = 26.0/32.0;     // Numerator is gear on motor; Denominator is gear on wheel
     private static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference
 
     //encoder ticks per one inch
-    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV) / (WHEEL_DIAMETER_INCHES * Math.PI * DRIVE_GEAR_REDUCTION);
+    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * MOTOR_GEARBOX_RATIO) / (WHEEL_DIAMETER_INCHES * Math.PI * DRIVE_GEAR_REDUCTION);
 
 
     //sets variables for vision
@@ -122,8 +123,8 @@ public class RobotBaseScorpius implements SensorEventListener{
         relicExtender = hardwareMap.dcMotor.get("extender");
 
         //reverses left side so that the robot drives forward when positive power is applied to all drive motors
-        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
         motorScoop.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //Resets all encoders
@@ -277,14 +278,20 @@ public class RobotBaseScorpius implements SensorEventListener{
 
     }
 
-    protected void updateDriveMotors(double frontLeft, double frontRight, double backLeft, double backRight, boolean slowDrive) {
+    protected void updateDriveMotors(double frontLeft, double frontRight, double backLeft, double backRight, boolean slowDrive1, boolean slowDrive2) {
         //tank drive
+        int slowDrive = 0;
 
-        if (slowDrive) {
-            frontLeft /= 2;
-            frontRight /= 2;
-            backLeft /= 2;
-            backRight /= 2;
+        if(slowDrive1){
+            slowDrive++;
+        } if (slowDrive2){
+            slowDrive++;
+        }
+        if (slowDrive>0) {
+            frontLeft /= slowDrive;
+            frontRight /= slowDrive;
+            backLeft /= slowDrive;
+            backRight /= slowDrive;
         }
 
         motorFrontLeft.setPower(frontLeft);
