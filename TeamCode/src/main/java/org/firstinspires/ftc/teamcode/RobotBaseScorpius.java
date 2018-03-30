@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.archive.TimeoutException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -87,8 +88,9 @@ public class RobotBaseScorpius implements SensorEventListener{
 
     private static final double P_DRIVE_COEFF = 0.013;           // Larger is more responsive, but also less stable
     private static final double P_TURN_COEFF = 0.018;           // Larger is more responsive, but also less stable
+    private static final double k_MOTOR_STALL_SPEED = 0.2;
 
-    protected static final double driveSpeed = 0.6;
+    protected static final double driveSpeed = 0.5;
     protected static final double turnSpeed = 0.4;
 
     final double slapperVertical_INITIAL = 0.875;
@@ -457,25 +459,28 @@ public class RobotBaseScorpius implements SensorEventListener{
         //callingOpMode.telemetry.update();
 
     }
+    protected void driveStraight(double inches, float heading) throws InterruptedException { try {driveStraight(inches, heading, driveSpeed, false, false);} catch (Exception e) {} }
 
-
-    protected void driveStraight(double inches, float heading) throws InterruptedException { driveStraight(inches, heading, driveSpeed); }
+    protected void driveStraight(double inches, float heading, double power) throws InterruptedException { try {driveStraight(inches, heading, power, true, false);} catch (Exception TimeoutException) {} }
 
     /**
      * Tells the robot to drive forward at a certain heading for a specified distance
-     * @param inches number of inches we ask the robot to drive, only posative numbers
+     * @param inches number of inches we ask the robot to drive, only positive numbers
      * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
      * @param power amount of power given to motors, does not affect distance driven, absolute value from 0 to 1
      */
-    protected void driveStraight(double inches, float heading, double power) throws InterruptedException {
+    protected void driveStraight(double inches, float heading, double power, boolean rampDown, boolean doTimeout) throws InterruptedException, TimeoutException {
         int target = (int) (inches * COUNTS_PER_INCH);          //translates the number of inches to be driven into encoder ticks
         double error;                                           //The number of degrees between the true heading and desired heading
         double correction;                                      //Modifies power to account for error
         double leftPower;                                       //Power being fed to left side of bot
         double rightPower;                                      //Power being fed to right side of bot
         double max;                                             //To be used to keep powers from exceeding 1
-
+        int distFromStart, distFromStop;
+        double p_drive_ramp = power/550;
         heading = (int) normalize360(heading);
+        long initialTime;
+        double timeoutSecs = 200 * inches;                      //in millis
 
         //Ensure that motors are set up correctly to drive
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -491,18 +496,26 @@ public class RobotBaseScorpius implements SensorEventListener{
         //Clip the input power to keep it from exceeding 1 & -1
         power = Range.clip(power, -1.0, 1.0);
 
-        //Set drive motors to initial input power
+        /*Set drive motors to initial input power
         motorFrontRight.setPower(power);
         motorFrontLeft.setPower(power);
         motorBackLeft.setPower(power);
         motorBackRight.setPower(power);
-
+        */
         //TODO determine whether an thread.interrupted or the isStopRequested method
 
+        initialTime = System.currentTimeMillis();
         //Begin to correct for heading error
         //While: we have not driven correct distance & bot is not stopped
         while (Math.abs(encoderMotor.getCurrentPosition()) < Math.abs(target) && !Thread.interrupted()) {
+
+            if ((Math.abs(System.currentTimeMillis() - initialTime) > timeoutSecs) && doTimeout) {
+                updateDriveMotors(0, 0, 0, 0, false, false);
+                throw new TimeoutException();
+            }
             error = heading - zRotation;
+
+            distFromStop  = Math.abs(Math.abs(encoderMotor.getCurrentPosition()) - Math.abs(target));
 
             //Modify error onto the -180-180 range
             while (error > 180) error = (error - 360);
@@ -510,6 +523,22 @@ public class RobotBaseScorpius implements SensorEventListener{
 
             //Determine how much correction to be placed on each side of robot based on error
             correction = Range.clip(error * P_DRIVE_COEFF, -1, 1);
+
+            //ramp up or down
+            if(rampDown) {
+                if (distFromStop < 550) {
+                    power = distFromStop * p_drive_ramp;
+                }
+            }
+            // If we're below stall speed, go to stall speed
+            if(Math.abs(power) < k_MOTOR_STALL_SPEED) {
+                if(power >= 0) {
+                    power = k_MOTOR_STALL_SPEED;
+                }
+                else {
+                    power = -k_MOTOR_STALL_SPEED;
+                }
+            }
 
             //Incorporate our correction for our heading into the power
             leftPower = power + correction;
