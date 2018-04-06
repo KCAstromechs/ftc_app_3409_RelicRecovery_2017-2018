@@ -88,7 +88,7 @@ public class RobotBaseScorpius implements SensorEventListener{
 
     private static final double P_DRIVE_COEFF = 0.013;           // Larger is more responsive, but also less stable
     private static final double P_TURN_COEFF = 0.018;           // Larger is more responsive, but also less stable
-    private static final double k_MOTOR_STALL_SPEED = 0.2;
+    private static final double k_MOTOR_STALL_SPEED = 0.16;
 
     protected static final double driveSpeed = 0.5;
     protected static final double turnSpeed = 0.4;
@@ -463,12 +463,14 @@ public class RobotBaseScorpius implements SensorEventListener{
 
     protected void driveStraight(double inches, float heading, double power) throws InterruptedException { try {driveStraight(inches, heading, power, true, false);} catch (Exception TimeoutException) {} }
 
+    protected void driveStraight(double inches, float heading, double power, boolean rampdown) throws InterruptedException { try {driveStraight(inches, heading, power, rampdown, false);} catch (Exception TimeoutException) {} }
+
     /**
      * Tells the robot to drive forward at a certain heading for a specified distance
-     * @param inches number of inches we ask the robot to drive, only positive numbers
+                * @param inches number of inches we ask the robot to drive, only positive numbers
      * @param heading heading of bot as it drives, range 0-360, DO NOT use to turn as it drives but instead to keep it in a straight line
      * @param power amount of power given to motors, does not affect distance driven, absolute value from 0 to 1
-     */
+                */
     protected void driveStraight(double inches, float heading, double power, boolean rampDown, boolean doTimeout) throws InterruptedException, TimeoutException {
         int target = (int) (inches * COUNTS_PER_INCH);          //translates the number of inches to be driven into encoder ticks
         double error;                                           //The number of degrees between the true heading and desired heading
@@ -477,10 +479,12 @@ public class RobotBaseScorpius implements SensorEventListener{
         double rightPower;                                      //Power being fed to right side of bot
         double max;                                             //To be used to keep powers from exceeding 1
         int distFromStart, distFromStop;
-        double p_drive_ramp = power/550;
+        double p_drive_ramp = power/800;
         heading = (int) normalize360(heading);
         long initialTime;
-        double timeoutSecs = 200 * inches;                      //in millis
+        double timeoutSecs = 150 * inches;                      //in millis
+
+        int loops = 0;
 
         //Ensure that motors are set up correctly to drive
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -526,7 +530,7 @@ public class RobotBaseScorpius implements SensorEventListener{
 
             //ramp up or down
             if(rampDown) {
-                if (distFromStop < 550) {
+                if (distFromStop < 800) {
                     power = distFromStop * p_drive_ramp;
                 }
             }
@@ -544,6 +548,13 @@ public class RobotBaseScorpius implements SensorEventListener{
             leftPower = power + correction;
             rightPower = power - correction;
 
+            if ((loops % 10) ==  0) {
+                System.out.println("Power: " + power);
+                System.out.println("leftPower: " + leftPower);
+                System.out.println("rightPower: " + rightPower);
+                System.out.println("encoder" + encoderMotor.getCurrentPosition());
+            }
+
             //Take the larger of the two powers
             max = Math.max(Math.abs(leftPower), Math.abs(rightPower));
             //If the largest power is too big, divide them both by it.
@@ -557,6 +568,8 @@ public class RobotBaseScorpius implements SensorEventListener{
             motorFrontLeft.setPower(leftPower);
             motorBackLeft.setPower(leftPower);
             motorBackRight.setPower(rightPower);
+
+            loops ++;
 
             Thread.yield();
         }
