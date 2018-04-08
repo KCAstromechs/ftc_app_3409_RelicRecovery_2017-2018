@@ -86,7 +86,7 @@ public class RobotBaseScorpius implements SensorEventListener{
     // 0 is set as straight ahead of the robot, 90 is the right, 270 is to the left
     private float zRotation;
 
-    private static final double P_DRIVE_COEFF = 0.013;           // Larger is more responsive, but also less stable
+    private static final double P_DRIVE_COEFF = 0.026;           // Larger is more responsive, but also less stable
     private static final double P_TURN_COEFF = 0.018;           // Larger is more responsive, but also less stable
     private static final double k_MOTOR_STALL_SPEED = 0.16;
 

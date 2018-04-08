@@ -21,8 +21,8 @@ public class DriveLengthTestAuto extends LinearOpMode {
 
         waitForStart();
 
-        robotBase.driveStraight(15, 0, 0.5, true);
+        robotBase.driveStraight(60, 0, 0.5, true);
         sleep(2000);
-        robotBase.driveStraight(15, 0, -0.5, true);
+        robotBase.driveStraight(60, 0, -0.5, true);
     }
 }

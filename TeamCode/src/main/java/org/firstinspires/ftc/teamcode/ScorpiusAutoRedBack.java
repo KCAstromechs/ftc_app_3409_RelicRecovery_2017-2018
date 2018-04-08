@@ -59,27 +59,32 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
                 break;
         }
 
-        if (opModeIsActive())robotBase.driveStraight(24, 0, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(21, 0, -0.6);
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                if (opModeIsActive())robotBase.strafe(21, 0);
+                if (opModeIsActive())robotBase.strafe(21, 0, 0.6);
                 break;
             case UNKNOWN:
             case CENTER:
-                if (opModeIsActive())robotBase.strafe(12, 0);
+                if (opModeIsActive())robotBase.strafe(12, 0, 0.6);
                 break;
             case RIGHT:
                 if (opModeIsActive())robotBase.strafe(5, 0);
                 break;
         }
-        if (opModeIsActive())robotBase.driveStraight(2, 0, -0.6);
+
+        //
+        if (opModeIsActive())robotBase.driveStraight(3, 0, -0.6);
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);
-        if (opModeIsActive())robotBase.retractGlyphter(2000);
-        if (opModeIsActive())robotBase.driveStraight(4, 0, -0.6);
+
+        //
+        if (opModeIsActive())robotBase.retractGlyphter(1900);
+
+        //out n in n out
         if (opModeIsActive())robotBase.driveStraight(3, 0);
-        if (opModeIsActive())robotBase.driveStraight(5, 0, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(4, 0, -0.6);
         if (opModeIsActive())robotBase.driveStraight(3, 0);
     }
 }

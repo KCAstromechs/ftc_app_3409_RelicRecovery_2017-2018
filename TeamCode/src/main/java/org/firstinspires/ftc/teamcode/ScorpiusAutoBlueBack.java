@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.Exceptions;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @Autonomous (name="AutoBlueBack", group = "Scorpius")
@@ -50,6 +51,7 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
             }
         });
 
+        //slap jewels
         if (opModeIsActive())robotBase.vision(450, 720); //TODO tune values
         switch (RobotBaseScorpius.jewelPosition) {
             case RobotBaseScorpius.JEWEL_BLUE_RED:
@@ -60,29 +62,39 @@ public class ScorpiusAutoBlueBack extends LinearOpMode {
                 break;
         }
 
-        if (opModeIsActive())robotBase.driveStraight(28, 0);
+        //drive, then strafe to drop first cube
+        if (opModeIsActive())robotBase.driveStraight(22, 0);
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
                 if (opModeIsActive())robotBase.strafe(8, 0);
                 break;
             case UNKNOWN:
             case CENTER:
-                if (opModeIsActive())robotBase.strafe(15, 0);
+                if (opModeIsActive())robotBase.strafe(15, 0, 0.6);
                 break;
             case RIGHT:
-                if (opModeIsActive())robotBase.strafe(24, 0);
+                if (opModeIsActive())robotBase.strafe(26, 0, 0.6);
                 break;
         }
+
+        //turn and drive in
         if (opModeIsActive())robotBase.turn(160, 0.6);
         if (opModeIsActive())robotBase.turn(180, 0.2);
-        if (opModeIsActive())robotBase.driveStraight(2, 180, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(4, 180, -0.6);
+
+        //drop in glyph 2
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(1000);
+
+        //put glyphter back
         if (opModeIsActive())robotBase.retractGlyphter(2000);
-        if (opModeIsActive())robotBase.driveStraight(4, 180, -0.6);
-        if (opModeIsActive())robotBase.driveStraight(3, 180);
-        if (opModeIsActive())robotBase.driveStraight(5, 180, -0.6);
+
+        //in-n-out
+        try {
+            if (opModeIsActive())robotBase.driveStraight(4, 180, -0.5, false, true);
+        }
+        catch (Exception TimeOutException) {}
         if (opModeIsActive())robotBase.driveStraight(3, 180);
     }
 }
