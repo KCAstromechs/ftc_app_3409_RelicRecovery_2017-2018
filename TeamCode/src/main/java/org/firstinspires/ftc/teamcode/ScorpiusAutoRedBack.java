@@ -69,7 +69,7 @@ public class ScorpiusAutoRedBack extends LinearOpMode {
                 if (opModeIsActive())robotBase.strafe(12, 0, 0.6);
                 break;
             case RIGHT:
-                if (opModeIsActive())robotBase.strafe(5, 0);
+                if (opModeIsActive())robotBase.strafe(4, 0);
                 break;
         }
 

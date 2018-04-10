@@ -60,21 +60,21 @@ public class ScorpiusAutoRedFrontTwoBlockTesting extends LinearOpMode {
         //drive based on picto
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                if (opModeIsActive())robotBase.driveStraight(42, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(40, 0, -0.6);
                 break;
             case UNKNOWN:
             case CENTER:
-                if (opModeIsActive())robotBase.driveStraight(34, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(32, 0, -0.6);
                 break;
             case RIGHT:
-                if (opModeIsActive())robotBase.driveStraight(26, 0, -0.6);
+                if (opModeIsActive())robotBase.driveStraight(24, 0, -0.6);
                 break;
         }
 
         //deposit glyph
         if (opModeIsActive())robotBase.turn(70, 0.8);
         if (opModeIsActive())robotBase.turn(90, 0.2);
-        if (opModeIsActive())robotBase.driveStraight(4, 90, -0.3);
+        if (opModeIsActive())robotBase.driveStraight(6, 90, -0.3);
         if (opModeIsActive())robotBase.lowerGrabby();
         if (opModeIsActive())robotBase.extendGlyphter();
         if (opModeIsActive())sleep(500);
@@ -84,10 +84,10 @@ public class ScorpiusAutoRedFrontTwoBlockTesting extends LinearOpMode {
         if (opModeIsActive())robotBase.openGrabby();
 
         //bulldoze glyph pit and G R A B
-        if (opModeIsActive())robotBase.driveStraight(22, 90, 0.9);
+        if (opModeIsActive())robotBase.driveStraight(24, 90, 0.9);
         if (opModeIsActive())robotBase.driveStraight(4, 90);
-        if (opModeIsActive())robotBase.turn(290);
-        if (opModeIsActive())robotBase.driveStraight(6, 290);
+        if (opModeIsActive())robotBase.turn(110);
+        if (opModeIsActive())robotBase.driveStraight(6, 110);
         if (opModeIsActive())robotBase.closeGrabby();
         if (opModeIsActive())sleep(500);
 
