@@ -46,7 +46,7 @@ public class RobotBaseScorpius implements SensorEventListener{
     private OpMode callingOpMode;
     private HardwareMap hardwareMap;
 
-    private static final double COUNTS_PER_MOTOR_REV = 1100/40;    // NeveRest Motor Encoder
+    private static final double COUNTS_PER_MOTOR_REV = 1100/40;    // NeveRest Motor Encoder THIS CONSTANT IS WRONG
     private static final double MOTOR_GEARBOX_RATIO = 20;
     private static final double DRIVE_GEAR_REDUCTION = 26.0/32.0;     // Numerator is gear on motor; Denominator is gear on wheel
     private static final double WHEEL_DIAMETER_INCHES = 4.0;    // For figuring circumference

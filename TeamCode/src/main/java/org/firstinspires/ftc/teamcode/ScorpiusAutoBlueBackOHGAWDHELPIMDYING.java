@@ -78,7 +78,7 @@ public class ScorpiusAutoBlueBackOHGAWDHELPIMDYING extends LinearOpMode {
         //turn and drive in
         if (opModeIsActive())robotBase.turn(160, 0.6);
         if (opModeIsActive())robotBase.turn(180, 0.2);
-        if (opModeIsActive())robotBase.driveStraight(4, 180, -0.6);
+        if (opModeIsActive())robotBase.driveStraight(6, 180, -0.6);
 
         //drop in glyph 2
         if (opModeIsActive())robotBase.lowerGrabby();
@@ -95,7 +95,32 @@ public class ScorpiusAutoBlueBackOHGAWDHELPIMDYING extends LinearOpMode {
         catch (Exception TimeOutException) {}
         if (opModeIsActive())robotBase.driveStraight(5, 180, 0.5);
 
-        if (opModeIsActive())robotBase.strafe(13, 180, -0.6);
+        switch (RobotBaseScorpius.pictoPosition) {
+            case LEFT:
+                if (opModeIsActive()) robotBase.strafe(8.5 , 180, -0.6);
+                break;
+            case UNKNOWN:
+            case CENTER:
+                if (opModeIsActive()) robotBase.strafe(6 , 180, -0.6);
+                break;
+        }
+
+        if (opModeIsActive()) robotBase.turn(160, 0.6);
+        try {if (opModeIsActive()) robotBase.driveStraight(50, 160, 0.6, false, true);} catch (Exception TimeOutException) {}
+
+        if (opModeIsActive()) robotBase.closeGrabby();
+        if (opModeIsActive()) sleep(500);
+        try {if (opModeIsActive()) robotBase.driveStraight(10, 160, -0.6, false, true);} catch (Exception TimeOutException) {}
+        if (opModeIsActive()) robotBase.raiseGrabby();
+        try {if (opModeIsActive()) robotBase.driveStraight(24, 160, -0.6, false, true);} catch (Exception TimeOutException) {}
+        if (opModeIsActive()) robotBase.turn(180, 0.6);
+        if (opModeIsActive()) robotBase.openGrabby();
+        if (opModeIsActive()) sleep(500);
+        if (opModeIsActive()) robotBase.lowerGrabby();
+        if (opModeIsActive()) robotBase.driveStraight(8, 180, -0.6);
+        if (opModeIsActive()) robotBase.extendGlyphter();
+        if (opModeIsActive()) robotBase.driveStraight(6, 180, 0.6);
+
         /* this last strafe is for the center position only
         it's goal is to line up with a fixed position, and the strafe distance will change based on the cypher key
         from here, we will drive straight into the glyph pit
