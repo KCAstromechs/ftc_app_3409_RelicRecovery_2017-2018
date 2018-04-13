@@ -65,10 +65,10 @@ public class ScorpiusAutoBlueFrontTwoBlockTesting extends LinearOpMode {
                 break;
             case UNKNOWN:
             case CENTER:
-                if (opModeIsActive())robotBase.driveStraight(36, 0, 0.6, true);
+                if (opModeIsActive())robotBase.driveStraight(37, 0, 0.6, true);
                 break;
             case RIGHT:
-                if (opModeIsActive())robotBase.driveStraight(44, 0, 0.6, true);
+                if (opModeIsActive())robotBase.driveStraight(46, 0, 0.6, true);
                 break;
         }
 
@@ -93,7 +93,7 @@ public class ScorpiusAutoBlueFrontTwoBlockTesting extends LinearOpMode {
         if (opModeIsActive())sleep(500);
 
         //drive back to cryptbox and lift the Boy
-        if (opModeIsActive())robotBase.driveStraight(6, 70, -0.3);
+        if (opModeIsActive())robotBase.driveStraight(6, 70, -0.6);
         if (opModeIsActive())robotBase.turn(90);
         if (opModeIsActive())robotBase.driveStraight(4, 90, -0.6);
         if (opModeIsActive())robotBase.raiseGrabby();
