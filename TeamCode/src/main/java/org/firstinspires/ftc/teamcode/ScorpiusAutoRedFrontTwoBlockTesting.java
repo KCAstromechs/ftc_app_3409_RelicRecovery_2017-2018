@@ -80,7 +80,7 @@ public class ScorpiusAutoRedFrontTwoBlockTesting extends LinearOpMode {
         if (opModeIsActive())sleep(500);
 
         //return to pickup mode
-        if (opModeIsActive())robotBase.retractGlyphter(2300);
+        if (opModeIsActive())robotBase.retractGlyphter(1800);
         if (opModeIsActive())robotBase.openGrabby();
 
         //bulldoze glyph pit and G R A B
