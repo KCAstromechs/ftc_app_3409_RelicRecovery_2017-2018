@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 @Autonomous (name="AutoBlueBack2Block", group = "Scorpius")
-public class ScorpiusAutoBlueBackOHGAWDHELPIMDYING extends LinearOpMode {
+public class ScorpiusAutoBlueBackTwoBlock extends LinearOpMode {
 
     private RelativeLayout squaresOverlay = null;
     private AppUtil appUtil = AppUtil.getInstance();
@@ -61,10 +61,10 @@ public class ScorpiusAutoBlueBackOHGAWDHELPIMDYING extends LinearOpMode {
         }
 
         //drive, then strafe to drop first cube
-        if (opModeIsActive())robotBase.driveStraight(22, 0);
+        if (opModeIsActive())robotBase.driveStraight(26, 0);
         switch (RobotBaseScorpius.pictoPosition) {
             case LEFT:
-                if (opModeIsActive())robotBase.strafe(8, 0, 0.6);
+                if (opModeIsActive())robotBase.strafe(5.2, 0, 0.6);
                 break;
             case UNKNOWN:
             case CENTER:
@@ -113,21 +113,13 @@ public class ScorpiusAutoBlueBackOHGAWDHELPIMDYING extends LinearOpMode {
         try {if (opModeIsActive()) robotBase.driveStraight(10, 160, -0.6, false, true);} catch (Exception TimeOutException) {}
         if (opModeIsActive()) robotBase.raiseGrabby();
         try {if (opModeIsActive()) robotBase.driveStraight(24, 160, -0.6, false, true);} catch (Exception TimeOutException) {}
-        if (opModeIsActive()) robotBase.turn(180, 0.6);
         if (opModeIsActive()) robotBase.openGrabby();
         if (opModeIsActive()) sleep(500);
         if (opModeIsActive()) robotBase.lowerGrabby();
-        if (opModeIsActive()) robotBase.driveStraight(8, 180, -0.6);
+        if (opModeIsActive()) sleep(500);
+        try {if (opModeIsActive()) robotBase.driveStraight(6, 166, -0.6, false, true);} catch (Exception TimeOutException) {}
         if (opModeIsActive()) robotBase.extendGlyphter();
-        if (opModeIsActive()) robotBase.driveStraight(6, 180, 0.6);
-
-        /* this last strafe is for the center position only
-        it's goal is to line up with a fixed position, and the strafe distance will change based on the cypher key
-        from here, we will drive straight into the glyph pit
-        then return to the fixed position, and strafe back in front of the correct column
-        I was having issues getting this strafe to work right, we will need to tune it.
-        it should be easy to mirror this to the red side
-        good luck
-         */
+        if (opModeIsActive()) sleep(500);
+        if (opModeIsActive()) robotBase.driveStraight(8, 166, 0.6);
     }
 }
