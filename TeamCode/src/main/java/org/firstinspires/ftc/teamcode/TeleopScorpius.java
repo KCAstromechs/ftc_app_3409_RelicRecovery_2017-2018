@@ -33,6 +33,8 @@ public class TeleopScorpius extends OpMode {
         robotBase = new RobotBaseScorpius();
 
         robotBase.init(this, hardwareMap);
+
+        robotBase.servoSlapperHorizontal.setPosition(robotBase.slapperHorizontal_READY);
     }
 
     @Override
@@ -113,7 +115,7 @@ public class TeleopScorpius extends OpMode {
         if(handClosed){
             robotBase.servoHand.setPosition(1);
         } else {
-            robotBase.servoHand.setPosition(0.35);
+            robotBase.servoHand.setPosition(0.7);
         }
         switch(elbow){
             case 1:

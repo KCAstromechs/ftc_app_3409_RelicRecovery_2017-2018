@@ -231,7 +231,7 @@ public class RobotBaseScorpius implements SensorEventListener{
 
         motorScoop.setPower(0.5);
         int timeOut = 0;
-        while(Math.abs(motorScoop.getCurrentPosition()) < 950 && timeOut < 100) {
+        while(Math.abs(motorScoop.getCurrentPosition()) < 650 && timeOut < 100) {
             Thread.sleep(10);
             timeOut++;
         }
