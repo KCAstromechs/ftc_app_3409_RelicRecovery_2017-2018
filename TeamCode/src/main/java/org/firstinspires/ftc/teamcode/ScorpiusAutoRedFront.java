@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.internal.opmode.RegisteredOpModes;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+@Disabled
 @Autonomous(name="AutoRedFront", group="Scorpius")
 public class ScorpiusAutoRedFront extends LinearOpMode {
 

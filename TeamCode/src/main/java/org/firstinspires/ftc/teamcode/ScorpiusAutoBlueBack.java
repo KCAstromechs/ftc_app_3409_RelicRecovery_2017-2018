@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.internal.android.dx.rop.code.Exceptions;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+@Disabled
 @Autonomous (name="AutoBlueBack", group = "Scorpius")
 public class ScorpiusAutoBlueBack extends LinearOpMode {
 

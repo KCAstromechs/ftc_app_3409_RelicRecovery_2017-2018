@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.RobotBaseScorpius;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.RobotBaseScorpius;
 /**
  * Created by N2Class1 on 4/5/2018.
  */
+@Disabled
 @Autonomous(name="DriveLengthTest", group="Test")
 public class DriveLengthTestAuto extends LinearOpMode {
 

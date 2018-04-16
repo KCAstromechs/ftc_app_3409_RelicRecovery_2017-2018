@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+@Disabled
 @Autonomous (name="AutoRedBack", group = "Scorpius")
 public class ScorpiusAutoRedBack extends LinearOpMode {
 

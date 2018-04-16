@@ -276,8 +276,7 @@ public class RobotBaseScorpius implements SensorEventListener{
         Thread.sleep(800);
         servoSlapperVertical.setPosition(slapperVertical_INITIAL);
         Thread.sleep(200);
-        servoSlapperHorizontal.setPosition(slapperHorizontal_INITIAL);
-
+        servoSlapperHorizontal.setPosition(slapperHorizontal_READY);
     }
 
     protected void updateDriveMotors(double frontLeft, double frontRight, double backLeft, double backRight, boolean slowDrive1, boolean slowDrive2) {

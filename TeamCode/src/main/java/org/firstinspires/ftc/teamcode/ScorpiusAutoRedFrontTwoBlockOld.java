@@ -5,11 +5,13 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+@Disabled
 @Autonomous(name="AutoRedFront2Block", group="Scorpius")
 public class ScorpiusAutoRedFrontTwoBlockOld extends LinearOpMode {
 

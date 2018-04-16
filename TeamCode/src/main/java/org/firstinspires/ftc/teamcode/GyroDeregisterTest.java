@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static android.content.Context.SENSOR_SERVICE;
@@ -13,6 +14,7 @@ import static android.content.Context.SENSOR_SERVICE;
 /**
  * Created by N2Class1 on 12/30/2017.
  */
+@Disabled
 @Autonomous(name = "gyroDeregisterTest", group = "test")
 public class GyroDeregisterTest extends LinearOpMode implements SensorEventListener {
     //variables for gyro operation
